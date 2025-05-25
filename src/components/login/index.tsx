@@ -4,6 +4,7 @@ import {Button, ButtonType} from "@/components/buttons";
 import ApiConnection from "@/util/api";
 import {showToastMessage} from "@/util/util";
 import {useRouter} from "next/router";
+import {useAuth} from "@/hooks/useAuth";
 
 export const Login = () => {
     const [email, setEmail] = useState<string>("");
@@ -11,6 +12,9 @@ export const Login = () => {
     const [activeForm, setActiveForm] = useState<"login" | "recover" | "">("");
 
     const router = useRouter();
+
+    const { login } = useAuth();
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log("CHAMOU O SUBMIT");
@@ -18,7 +22,7 @@ export const Login = () => {
 
         if (activeForm === "login") {
             console.log("Login", {email, password});
-            await login();
+            await handleLogin();
         }
 
         if (activeForm === "recover") {
@@ -26,19 +30,26 @@ export const Login = () => {
         }
     };
 
-    async function login() {
+    async function handleLogin() {
         try {
             const data = await ApiConnection(window.location.href).post(`/login`, {
                 email,
                 password
             })
+
+
+            const receivedToken = data?.data?.token;
+            console.log("LOGIN", data);
+
+            login(receivedToken)
+
             showToastMessage({
                 type: 'success',
                 message: 'Login realizado com sucesso!'
             });
-            router.push("/payments");
 
-            console.log("LOGIN", data);
+            await router.push("/payments");
+
         } catch (error) {
             showToastMessage({
                 type: 'error',
