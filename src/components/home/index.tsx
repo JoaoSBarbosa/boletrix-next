@@ -4,7 +4,7 @@ import { Login } from "../login";
 export const HomeLogin = () => {
   const [action, setAction] = useState<"login" | "register" | "">("login");
   return (
-    <section className=" w-1/3 h-1/3">
+    <section className=" w-[50%] h-1/3">
       <div className="flex flex-col items-center justify-center px-6 py-8 w-full mx-auto md:h-screen lg:py-0">
         <a
           href="#"

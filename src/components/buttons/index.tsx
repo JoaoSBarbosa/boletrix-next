@@ -9,12 +9,14 @@ interface ButtonProps {
     title?: string;
     value: string;
     onClick?: ()=> void;
+    width?: string | number;
 }
 
-export const Button = ({title, value, type = ButtonType.BUTTON, onClick}: ButtonProps) => {
+export const Button = ({title, value, type = ButtonType.BUTTON, onClick, width}: ButtonProps) => {
 
     return (
         <button
+            style={{ width: width ? width : "100%"}}
             onClick={ onClick }
             title={title}
             type={type}
