@@ -42,7 +42,7 @@ export const UserMenuButton = ({icon, onClick, name}: UserMenuButtonProps) => {
         <button
             type="button"
             onClick={onClick}
-            className={"flex items-center gap-2 border border-red-500 w-full"}
+            className={"flex items-center gap-2 w-full"}
         >
             {icon}
             {name}
