@@ -7,8 +7,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
 
     return(
-        <section className={"w-screen h-screen flex flex-col items-center  border border-gray-200"}>
-
+        <section className={"w-screen h-screen flex flex-col items-center bg-gray-300"}>
             <Header/>
             <Main>
                 { children }

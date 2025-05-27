@@ -5,7 +5,7 @@ import {LogOut, Pencil, Trash} from "lucide-react";
 import {RiArrowDownWideFill} from "react-icons/ri";
 import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 import {ReactNode, useState} from "react";
-import {EditUserDialog} from "@/components/user/dialogs/EditUserDialog";
+import {EditUserDialog} from "@/components/pages/user/dialogs/EditUserDialog";
 import {UserMenuButton} from "@/components/buttons";
 
 interface UserMenuProps {
