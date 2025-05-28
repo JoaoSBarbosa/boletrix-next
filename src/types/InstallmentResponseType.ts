@@ -1,10 +1,13 @@
 export type InstallmentResponseType ={
     id: string;
     amount: number;
-    installmentDate: string;
-    paymentDate: string;
-    receiptUrl: string;
-    receiptPath: string;
-    installmentNumber: string;
+    installment_date: string;
+    payment_date: string;
+    receipt_url: string;
+    receipt_path: string;
+    installment_number: string;
 
 }
+
+
+

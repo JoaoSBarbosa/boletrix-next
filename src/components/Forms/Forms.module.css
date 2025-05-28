@@ -1,0 +1,31 @@
+.formRoot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /*padding: 8px;*/
+}
+
+.formRowsRoot {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-direction: row;
+
+    gap: 8px;
+
+    /*margin-bottom: 4px;*/
+}
+
+.formColumnsRoot {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+
+    gap: 8px;
+}

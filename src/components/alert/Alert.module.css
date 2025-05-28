@@ -1,0 +1,157 @@
+.alertDialogOverlay {
+    background: rgba( 0, 0, 0, 0.05 );
+    position: fixed;
+    inset: 0;
+    animation: openAnimation 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+    -webkit-backdrop-filter: blur( 8px);
+    backdrop-filter: blur( 8px);
+
+    z-index: 4;
+}
+
+.alertDialogContent {
+    background-color: #FFFFFF;
+
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 350px;
+
+    padding: 25px;
+
+    animation: showAnimation 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+    z-index: 4;
+
+    border-radius: 4px;
+}
+
+.alertDialogContent:focus {
+    outline: none;
+}
+
+.alertDialogContent button {
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    font-weight: 400;
+    font-size: 14px;
+    padding: 10px;
+
+    background: transparent;
+
+    outline: none;
+
+    transition: 0.5s;
+
+    border-radius: 5px;
+}
+
+.alertDialogTitle {
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.alertDialogDescription {
+    font-weight: 300;
+    font-size: 16px;
+
+    margin-bottom: 2%;
+}
+
+.cancelButton {
+    color: #DC0000;
+}
+
+.cancelButton:hover {
+    background: #FBEEE6;
+}
+
+.cancelButton:focus {
+    background: #FBEEE6;
+}
+
+.actionButton {
+    color: #239B56;
+}
+
+.actionButton:hover {
+    background: #E9F7EF;
+}
+
+.actionButton:focus {
+    background: #E9F7EF;
+}
+
+@keyframes pulseText {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.pulsatingText {
+    animation: pulseText 1s infinite;
+    font-weight: bold;
+    color: #b91c1c; /* Vermelho para destaque */
+}
+
+@media ( min-width: 1360px ) and ( max-width: 1600px ) {
+    .alertDialogContent {
+        width: 320px;
+    }
+
+    .alertDialogContent button {
+        height: 38px;
+
+        font-size: 13px;
+    }
+
+    .alertDialogTitle {
+        font-size: 16px;
+    }
+
+    .alertDialogDescription {
+        font-size: 11px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1360px ) {
+    .alertDialogContent {
+        width: 300px;
+    }
+
+    /*.alertDialogContent button {*/
+    /*    height: 36px;*/
+
+    /*    font-size: 12px;*/
+    /*}*/
+
+    /*.alertDialogTitle {*/
+    /*    font-size: 14px;*/
+    /*}*/
+
+    /*.alertDialogDescription {*/
+    /*    font-size: 14px;*/
+    /*}*/
+}
+
+@keyframes showAnimation {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}

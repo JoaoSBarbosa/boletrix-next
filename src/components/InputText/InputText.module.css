@@ -1,0 +1,211 @@
+.labelRoot {
+    width: 100%;
+
+    padding: 4px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+
+    border-width: 0 0 2px 0;
+    border-color: #D1D5DB;
+    border-style: solid;
+
+    font-weight: 300;
+    font-size: 15px;
+    color: #898f9a;
+
+}
+
+.inputTextContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-top: 8px;
+
+}
+.inputTextContainer {
+    width: 100%;
+    height: 100%;
+
+}
+.inputText {
+    width: 100%;
+    background: transparent;
+    font-weight: 500;
+    font-size: 18px;
+    outline: none;
+    border: none;
+    padding: 0;
+    /*margin: 4px 0;*/
+    color: #374151;
+}
+
+
+
+.inputText::placeholder {
+    color: #cdd1d9;
+}
+.inputText:focus{
+    outline: none;
+    border: none;
+}
+/* Especificando mais diretamente o tipo "date" */
+.inputText[type="date"]:focus {
+    outline: none; /* Remove a borda azul padrão */
+    border-color: #374151; /* Customiza a borda */
+    box-shadow: none; /* Remove o brilho do foco */
+}
+.inputIcon {
+    width: 30px;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Compact Text Input */
+.compactLabelRoot {
+    width: 100%;
+
+    padding: 4px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+
+    border-width: 0 0 2px 0;
+    border-color: #D1D5DB;
+    border-style: solid;
+
+    font-weight: 400;
+    font-size: 10px;
+    color: #9CA3AF;
+}
+
+.compactLabelRoot2 {
+    width: 100%;
+    padding: 4px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 400;
+    font-size: 10px;
+    color: #9CA3AF;
+}
+
+.compactInputText {
+    width: 100%;
+    background: transparent;
+    font-weight: 500;
+    font-size: 12px;
+    outline: none;
+}
+
+.compactInputText[type="date"]:focus {
+    outline: none; /* Remove a borda azul padrão */
+    border-color: #374151; /* Customiza a borda */
+    box-shadow: none; /* Remove o brilho do foco */
+}
+
+.compactInputText::placeholder {
+    color: #9CA3AF;
+}
+
+.compactInputIcon {
+    width: 20px;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.customSelect{
+    border: none;
+    border-bottom: 2px solid rgb(209 213 219);
+    /*background-color: transparent;*/
+    font-weight: bold;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+.customSelect:focus {
+    border-bottom-color: #1e3a8a; /* Cor da borda ao focar */
+    box-shadow: none; /* Remove qualquer sombra de foco padrão */
+}
+
+.scrollbarInput::-webkit-scrollbar{
+    width: 8px;
+}
+
+.scrollbarInput::-webkit-scrollbar-track{
+    background: #f0f0f0;
+}
+
+.scrollbarInput::-webkit-scrollbar-thumb{
+    background-color: #c4c4c4;
+    border-radius: 8px;
+    border: 2px solid #a0a0a0;
+}
+
+.scrollbarInput::-webkit-scrollbar-thumb:hover{
+    background-color: #a0a0a0;
+}
+
+@media ( min-width: 1360px ) and ( max-width: 1600px ) {
+    .labelRoot {
+        font-size: 14px;
+    }
+
+    .inputText,
+    .inputText2{
+        font-size: 16px;
+    }
+
+    .inputIcon {
+        width: 26px;
+    }
+
+    .compactInputIcon {
+        width: 18px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1360px ) {
+    .labelRoot {
+        font-size: 13px;
+    }
+
+    .inputText,
+    .inputText2{
+        font-size: 15px;
+    }
+
+    .inputIcon {
+        width: 24px;
+    }
+
+    .compactLabelRoot,
+    .compactLabelRoot2{
+        font-size: 8px;
+    }
+
+    .compactInputText {
+        font-size: 10px;
+    }
+
+    .compactInputIcon {
+        width: 16px;
+    }
+}

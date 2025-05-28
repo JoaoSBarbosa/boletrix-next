@@ -1,5 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { ReactNode } from "react";
+import {ReactNode} from "react";
+import styles from "./Modal.module.css";
+import {X} from "@phosphor-icons/react";
 
 interface ModalProps {
     title?: string;
@@ -8,17 +10,49 @@ interface ModalProps {
     setOpen: (open: boolean) => void;
     children: ReactNode;
     trigger?: React.ReactNode;
+    width?: string | number;
+    height?: string | number;
+    maxHeight?: string | number;
+    minHeight?: string | number;
+    idProps?: string;
 }
 
-export const Modal = ({ title, description, setOpen, trigger, open, children }: ModalProps) => {
+export const Modal = ({
+                          idProps,
+                          minHeight,
+                          maxHeight,
+                          height,
+                          width,
+                          title,
+                          description,
+                          setOpen,
+                          trigger,
+                          open,
+                          children
+                      }: ModalProps) => {
+
+    const handleClose = () => {
+        if (setOpen) {
+            setOpen(false);
+        }
+    };
+
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
-                { trigger }
+                {trigger}
             </Dialog.Trigger>
             <Dialog.Portal>
-                <Dialog.Overlay className="bg-black/40 fixed inset-0 z-40" />
-                <Dialog.Content className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-900 p-6 rounded-md shadow-lg w-full max-w-md">
+                <Dialog.Overlay className="bg-black/40 fixed inset-0 z-40" onClick={handleClose}/>
+                <Dialog.Content
+                    style={{
+                        width: width,
+                        height: height ? height : '',
+                        maxHeight: maxHeight ? maxHeight : '',
+                        minHeight: minHeight ? minHeight : '',
+                    }}
+                    className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-900 p-6 rounded-md shadow-lg"
+                >
                     {title && (
                         <Dialog.Title className="text-lg font-semibold mb-2">
                             {title}
@@ -35,10 +69,12 @@ export const Modal = ({ title, description, setOpen, trigger, open, children }: 
 
                     <Dialog.Close asChild>
                         <button
-                            className="mt-4 inline-block text-sm text-gray-600 hover:underline"
-                            onClick={() => setOpen(false)}
+                            id={idProps ? idProps : ""}
+                            className={styles.closeButton}
+                            aria-label="Fechar"
+                            onClick={handleClose} // Chame a função handleClose quando o botão de fechar for clicado
                         >
-                            Fechar
+                            <X size={'60%'} weight={'bold'}/>
                         </button>
                     </Dialog.Close>
                 </Dialog.Content>

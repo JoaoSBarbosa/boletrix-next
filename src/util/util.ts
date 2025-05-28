@@ -1,8 +1,12 @@
 import {toast} from "react-toastify";
+import {format, parseISO} from "date-fns";
+import {ptBR} from "date-fns/locale";
+
 interface ShowToastMessageProps {
     type: 'info' | 'warning' | 'error' | 'success' | 'dark' | 'warn',
     message: string;
 }
+
 export function showToastMessage({type, message}: ShowToastMessageProps) {
     switch (type) {
         case "info":
@@ -24,4 +28,37 @@ export function showToastMessage({type, message}: ShowToastMessageProps) {
             toast.dark(message)
             break;
     }
+}
+
+
+export const formatedDate = (date: string) => {
+    if (!date) return "";
+    return format(parseISO(date), 'dd/MM/yyyy', {locale: ptBR})
+}
+
+export function recalculateHeightComponent(width: number, componentHeight: string | number | undefined) {
+    let heightToCalculate: any;
+    let suffix: string = '';
+    if (componentHeight === undefined) {
+        return
+    }
+
+    if (typeof componentHeight as string) {
+        heightToCalculate = Number(String(componentHeight).replace('vh', '').replace('px', ''));
+
+        if (String(componentHeight).includes('px'))
+            suffix = 'px';
+
+        if (String(componentHeight).includes('vh'))
+            suffix = 'vh';
+    } else
+        heightToCalculate = componentHeight as number;
+
+    if (width <= 1400)
+        heightToCalculate = heightToCalculate - (heightToCalculate * 0.1);
+
+    if (suffix)
+        return heightToCalculate + suffix;
+    else
+        return heightToCalculate;
 }

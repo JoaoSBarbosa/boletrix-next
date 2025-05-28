@@ -1,0 +1,175 @@
+.dialogOverlay {
+    background: rgba(0, 0, 0, 0.05);
+    position: fixed;
+    inset: 0;
+    animation: openAnimation 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    z-index: 25;
+    /*z-index: 4;*/
+
+
+}
+.dialogContent::-webkit-scrollbar {
+    width: 7px;
+}
+
+.dialogContent::-webkit-scrollbar-thumb {
+    background-color: #b0b0b5; /* Cor mais clara e suave */
+    border-radius: 8px; /* Aumenta a suavidade dos cantos */
+    border: 2px solid #e0e0e5; /* Cor de borda mais leve para contrastar suavemente */
+}
+
+.dialogContent {
+    scrollbar-width: thin; /* Mantém a barra fina */
+    scrollbar-color: #b0b0b5 #e0e0e5; /* Cor clara para o polegar e trilho */
+}
+
+.dialogContent::-webkit-scrollbar-track {
+    background-color: #f5f5f7; /* Tom claro e neutro para a pista de rolagem */
+}
+
+/* Estilo da barra de rolagem */
+.dialogContent::-webkit-scrollbar {
+    width: 8px; /* Barra mais fina */
+    height: 8px;
+}
+
+
+.dialogContent {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /*background: #FFFFFF;*/
+    z-index: 25;
+    outline: none;
+    border-radius: 4px;
+    overflow-y: auto;
+}
+
+.closeButton {
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #DC0000;
+
+    color: #FFFFFF;
+    outline: none;
+    cursor: pointer;
+    transition: 0.5s;
+
+
+
+}
+
+.closeButton:hover {
+    background: #970000;
+}
+
+.closeButton:focus {
+    background: #CE0000;
+}
+
+.dialogTitle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+    gap: 8px;
+    border-width: 0 0 1px 0;
+    border-color: #DCDCDC;
+    border-style: solid;
+    padding: 1%;
+}
+.dialogTitle2 {
+    display: flex;
+    flex-direction: column;
+    /*flex-wrap: wrap;*/
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+    gap: 8px;
+    border-width: 0 0 1px 0;
+    border-color: #DCDCDC;
+    border-style: solid;
+    padding: 1%;
+}
+
+
+.dialogTitleNotBorder{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+    gap: 8px;
+    padding: 2%;
+}
+
+.dialogDescription {
+    font-size: 12px;
+    font-weight: 300;
+
+    padding-top: 2%;
+    padding-left: 0;
+}
+
+@media ( min-width: 1360px ) and ( max-width: 1600px ) {
+    .dialogTitle,
+    .dialogTitleNotBorder{
+        font-size: 16px;
+    }
+
+
+    .dialogDescription {
+        font-size: 11px;
+    }
+
+    .closeButton {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1360px ) {
+
+
+    .dialogTitle,
+    .dialogTitle2,
+    .dialogTitleNotBorder{
+        font-size: 14px;
+    }
+
+    .dialogDescription {
+        font-size: 10px;
+    }
+
+    .closeButton {
+        height: 16px;
+        width: 16px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1000px ) {
+    .dialogContent {
+        width: 55%;
+    }
+}
+
+@keyframes openAnimation {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
