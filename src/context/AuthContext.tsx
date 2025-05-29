@@ -1,6 +1,7 @@
 import {createContext, useEffect, useState} from "react";
 import {UserType} from "@/types/UserType";
 import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/router";
 
 
 interface AuthContextProps {
@@ -19,7 +20,7 @@ interface AuthProviderProps {
     children: React.ReactNode;
 }
 export const AuthContextProvider  = ({ children }:AuthProviderProps) =>{
-
+    const router = useRouter();
     const [ user, setUser ] = useState<UserType | null>(null);
     const [ token, setToken ] = useState<string | null>(null);
 
@@ -63,10 +64,11 @@ export const AuthContextProvider  = ({ children }:AuthProviderProps) =>{
         decodeAndSetUser(token);
     }
 
-    const logout = () => {
+    const logout = async () => {
         setToken(null);
         setUser(null);
         localStorage.removeItem("token");
+        await router.push("/");
     };
 
     const isAdmin = user?.roles.includes("ROLE_ADMIN") ?? false

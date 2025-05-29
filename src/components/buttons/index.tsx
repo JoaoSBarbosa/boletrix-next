@@ -7,7 +7,7 @@ export enum ButtonType {
 }
 
 
-enum BgColor {
+export enum BgColor {
     BLUE = "bg-blue-500 text-white",
     DARK = "bg-blue-700",
     DARKER = "bg-blue-800",
@@ -25,12 +25,23 @@ interface ButtonProps {
     width?: string | number;
     bgColor?: BgColor;
     children?: React.ReactNode;
+    disabled?: boolean;
 }
 
-export const Button = ({title,children, value, bgColor = BgColor.BLUE,  type = ButtonType.BUTTON, onClick, width}: ButtonProps) => {
+export const Button = ({
+                           title,
+                           children,
+                           disabled,
+                           value,
+                           bgColor = BgColor.BLUE,
+                           type = ButtonType.BUTTON,
+                           onClick,
+                           width
+                       }: ButtonProps) => {
 
     return (
         <button
+            disabled={disabled}
             style={{width: width ? width : "100%"}}
             onClick={onClick}
             title={title}

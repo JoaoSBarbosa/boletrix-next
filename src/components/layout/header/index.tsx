@@ -2,7 +2,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {UserMenu} from "@/components/userMenu/UserMenu";
 
 export const Header = () => {
-    const {user} = useAuth();
+    const {user,logout} = useAuth();
 
     return (
         <header className="flex items-center justify-between w-full px-6 py-4 bg-gray-800 shadow-md">
@@ -14,7 +14,7 @@ export const Header = () => {
                 />
             </figure>
 
-            <UserMenu/>
+            <UserMenu onLogout={logout}/>
             {/*<div className="flex items-center gap-2">*/}
             {/*    <span className="text-sm text-gray-700">*/}
             {/*        {user?.name || "Usuário"}*/}

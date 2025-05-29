@@ -57,7 +57,7 @@ export const UserMenu = ({onLogout, onEdit, onDelete}: UserMenuProps) => {
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Content
-                className="min-w-[180px] bg-white text-gray-900 shadow-md rounded-md p-1 border border-gray-100"
+                className="min-w-[180px] bg-white text-gray-900 shadow-md rounded-md p-1 border border-gray-100 z-40"
                 sideOffset={5}
             >
                 {/*<DropdownMenu.Item*/}

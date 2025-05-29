@@ -163,7 +163,7 @@ export function InputText({
                     <input
                         onClick={onClick}
                         id={title.toLowerCase().replace(/ /g, '')}
-                        className={ `${styles.compactInputText} ${cursorText ? "cursor-text" : ""}`}
+                        className={ `${styles.compactInputText} ${cursorText ? "cursor-text" : ""} placeholder-opacity-50 placeholder-gray-100`}
                         autoComplete={'off'}
                         onKeyPress={(event) => {
                             if (justNumber !== undefined && justNumber) {

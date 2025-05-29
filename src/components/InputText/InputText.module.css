@@ -47,9 +47,10 @@
 
 
 
-.inputText::placeholder {
-    color: #cdd1d9;
-}
+/*.inputText::placeholder {*/
+/*    !*color: #cdd1d9;*!*/
+/*    color: #b1b1b1;*/
+/*}*/
 .inputText:focus{
     outline: none;
     border: none;
@@ -116,9 +117,10 @@
     box-shadow: none; /* Remove o brilho do foco */
 }
 
-.compactInputText::placeholder {
-    color: #9CA3AF;
-}
+/*.compactInputText::placeholder {*/
+/*    color: #0045c1;*/
+/*    !*color: #cdd1d9;*!*/
+/*}*/
 
 .compactInputIcon {
     width: 20px;
