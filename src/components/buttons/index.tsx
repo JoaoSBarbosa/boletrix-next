@@ -82,6 +82,7 @@ export const UserMenuButton = ({icon, onClick, name}: UserMenuButtonProps) => {
 export enum ThemeSpan {
     BLUE = 'hover:border-blue-400 hover:bg-sky-100',
     RED = 'hover:border-red-400 hover:bg-red-100',
+    RED_2 = 'hover:border-red-400 hover:bg-red-100',
     GREEN = 'hover:border-green-400 hover:bg-green-100',
     YELLOW = 'hover:border-yellow-400 hover:bg-yellow-100',
     PURPLE = 'hover:border-purple-400 hover:bg-purple-100',

@@ -7,19 +7,40 @@ import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import ApiConnection from "@/util/api";
 import {AxiosResponse} from "axios";
 import {PageableResponse} from "@/types/PageableResponse";
-import {Button, ButtonType, TableSpanButton, ThemeSpan,} from "@/components/buttons";
+import {BgColor, Button, ButtonType, TableSpanButton, ThemeSpan,} from "@/components/buttons";
 import {GeneratedPaymentsDialog} from "@/components/pages/payments/dialogs/GeneratedPaymentsDialog";
-import {AlignmentColumnTableProps, ColumnTableProps, DefaultTable} from "@/components/tables/DefaultTable";
+import {
+    AlignmentColumnTableProps,
+    ColumnTableProps,
+    DefaultTable,
+    MobileInstallmentTable
+} from "@/components/tables/DefaultTable";
 import {Alert} from "@/components/alert";
 import {IoBackspace} from "react-icons/io5";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
 import {cardStatus, formatedDate, showToastMessage} from "@/util/util";
 import {MobileTable} from "@/components/Forms/mobile/MobileTable";
+import {TrashIcon} from "@phosphor-icons/react";
+import Pagination from "@/components/pagination";
+import {PageableFooter} from "@/components/pageable";
 
 export default function Payments() {
 
     const {user, isAdmin} = useAuth();
+
+    const PAGE_SIZE = 10;
+    const ITEMS_PER_PAGE = '10';
     const [payments, setPayments] = useState<InstallmentResponseType[]>([]);
+    const [requestPage, setRequestPage] = useState<number>(1);
+
+    const [pageSize, setPageSize] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0); // total de páginas
+    const [totalElements, setTotalElements] = useState<number>(0);
+
+    const [hasFilter, setHasFilter] = useState(false)
+    const [status, setStatus] = useState("");
+    const [date, setDate] = useState("");
+
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
 
 
@@ -34,21 +55,53 @@ export default function Payments() {
         };
     }, []);
     useEffect(() => {
-
-        fetchPayments().then(setPayments)
+        fetchPayments(hasFilter).then(setPayments)
     }, [])
+    useEffect(() => {
+        fetchPayments(hasFilter).then(setPayments)
+    }, [requestPage])
+
+    useEffect(() => {
+        console.log("REQUEST PAGE: ", requestPage)
+    }, [requestPage]);
+
+    async function fetchPayments(withFilter: boolean) {
+
+        let paymentsData = [] as InstallmentResponseType[];
 
 
-    async function fetchPayments() {
+        let paramsList = [] as string[];
+        paramsList.push("size=" + ITEMS_PER_PAGE);
+        paramsList.push("page=" + (requestPage - 1));
 
-        let paymentsData = [] as InstallmentResponseType[]
+        if (withFilter) {
+            setHasFilter(true);
+            if (status) paramsList.push("status=" + status);
+            if (date) paramsList.push("paymentsData=" + date);
+        } else {
+            setHasFilter(false)
+        }
+        // let paramsPayments = "?";
+        // for (const paramItem of paramsList) {
+        //     paramsPayments += paramItem + "&"
+        // }
+        let paramsPayments = `?`; // Spring usa paginação começando em 0
+        for (const paramItem of paramsList) {
+            paramsPayments += paramItem + "&"
+        }
+
         try {
-
-            const response: AxiosResponse<PageableResponse<InstallmentResponseType>> = await ApiConnection(window.location.href).get("/installments")
-            paymentsData = response.data.content;
-            console.log("response", paymentsData);
+            const {data}: AxiosResponse<PageableResponse<InstallmentResponseType>> = await ApiConnection(window.location.href).get(`/installments${paramsPayments}`, {
+                timeout: 5 * 60 * 1000
+            })
+            paymentsData = data.content;
+            setTotalPages(data?.total_pages);
+            setTotalElements(data?.total_elements);
+            setPageSize(data?.size)
+            console.log("response", data);
         } catch (error) {
             paymentsData = [];
+            setTotalPages(0);
             showToastMessage({
                 type: "error",
                 message: "Erro ao tentar obter a lista de boletos: " + error,
@@ -57,6 +110,10 @@ export default function Payments() {
         return paymentsData;
     }
 
+    const handlePageChange = (newPage: number) => {
+        console.log("chamou o handle page change")
+        setRequestPage(newPage)
+    }
 
     const clientsTableColumns = [
         {
@@ -143,90 +200,110 @@ export default function Payments() {
                     onAccept={() => handleDeleteInstallment(row?.id)}
                 />
         },
-
     ] as ColumnTableProps[];
 
-    function handleDeleteInstallment(id: number | string) {
+    async function handleDeleteInstallment(id: number | string) {
+        if (!id) {
+            showToastMessage({
+                type: "warning",
+                message: "Necessario o ID da parcela para excluir"
+            })
+            return;
+        }
+        try {
+            await ApiConnection(window.location.href).delete(`/installments/${id}`);
+            showToastMessage({
+                type: "success",
+                message: "Parcela deletada com sucesso!"
+            })
+            fetchPayments(hasFilter).then(setPayments)
 
+        } catch (error) {
+            showToastMessage({
+                type: "error",
+                message: "Erro ao tentar deletar o boleto" + error
+            })
+        }
     }
 
-    const isMobile = useMediaQuery({maxWidth: 768});
+    async function handleDeleteAll() {
+        try {
+            await ApiConnection(window.location.href).delete("/installments/all");
+            showToastMessage({
+                type: "success",
+                message: "Parcelas deletadas com sucesso!"
+            })
 
+            fetchPayments(hasFilter).then(setPayments)
+        } catch (error) {
+            showToastMessage({
+                type: "error",
+                message: "Erro ao tentar deletar todos os registros de parcelas: " + error
+            })
+        }
+    }
+
+    const [isClient, setIsClient] = useState(false);
+    const isMobile = useMediaQuery({ maxWidth: 768 });
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
     return (
         <Layout>
 
-            <div className={"w-full p-4 flex justify-end"}>
+            <div className={"w-full py-2 px-0 xl:py-4 xl:px-4 gap-2 flex justify-end"}>
 
+                {payments?.length > 0 &&
+                    <Alert
+                        titleAlert={`Confirmação de Exclusão`}
+                        descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir os registros de pagamentos do sistema? ️`}
+                        button={
+
+                            <Button
+                                width={"max-content"}
+
+                                bgColor={BgColor.RED}
+                                type={ButtonType.BUTTON} value={"Deletar todas"}>
+
+                                <TrashIcon/>
+                            </Button>
+
+                        }
+                        onAccept={handleDeleteAll}
+                    />
+                }
                 <GeneratedPaymentsDialog reload={() => {
-                    fetchPayments().then(setPayments)
+                    fetchPayments(false).then(setPayments)
                 }}/>
-                {/*<Button type={ButtonType.BUTTON} value={"Gerar parcelas"} width={"max-content"}/>*/}
             </div>
 
-            {isMobile ? (
 
-                <div className={"max-h-[65vh] overflow-auto"}>
-                    <MobileTable columns={clientsTableColumns} list={payments}/>
+            {!isClient ? null : isMobile ? (
 
+                <div className={"max-h-[55vh] overflow-auto"}>
+                    {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
+                    <MobileInstallmentTable
+                        list={payments}
+                        onDelete={handleDeleteInstallment}
+                    />
                 </div>
             ) : (
                 <DefaultTable
                     columns={clientsTableColumns}
                     list={payments.length > 0 ? payments : []}
                     maxHeight={tableComponentMaxHeight}
-                    // backgroundTitle={"#FFFFFF"}
                 />
             )}
-
-
-            {/*<div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">*/}
-            {/*    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">*/}
-            {/*        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">*/}
-            {/*        <tr>*/}
-            {/*            {tableHeaderList?.map((header, index) => (*/}
-            {/*                <th scope="col" className="px-6 py-3 text-center" key={index}>*/}
-            {/*                    {header}*/}
-            {/*                </th>*/}
-            {/*            ))}*/}
-            {/*        </tr>*/}
-            {/*        </thead>*/}
-            {/*        <tbody>*/}
-            {/*        {payments?.map((payment, index) => (*/}
-            {/*            <tr*/}
-            {/*                key={index}*/}
-            {/*                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"*/}
-            {/*            >*/}
-            {/*                <td className="px-6 py-4">{payment.id}</td>*/}
-            {/*                <td className="px-6 py-4">R$ {payment.amount.toFixed(2)}</td>*/}
-            {/*                <td className="px-6 py-4">*/}
-            {/*                    {payment?.installment_date ? formatedDate(payment.installment_date) : ""}*/}
-            {/*                    /!*{new Date(payment.installment_date).toLocaleDateString("pt-BR")}*!/*/}
-            {/*                </td>*/}
-            {/*                <td className="px-6 py-4 text-center">*/}
-            {/*                    {payment?.payment_date ? formatedDate(payment.payment_date) : "-"}*/}
-
-            {/*                </td>*/}
-            {/*                <td className="px-6 py-4">*/}
-            {/*                    {payment.receipt_url ? (*/}
-            {/*                        <a*/}
-            {/*                            href={payment.receipt_url}*/}
-            {/*                            target="_blank"*/}
-            {/*                            rel="noopener noreferrer"*/}
-            {/*                            className="text-blue-600 hover:underline"*/}
-            {/*                        >*/}
-            {/*                            Ver comprovante*/}
-            {/*                        </a>*/}
-            {/*                    ) : (*/}
-            {/*                        "-"*/}
-            {/*                    )}*/}
-            {/*                </td>*/}
-            {/*                <td className="px-6 py-4">{payment.installment_number}</td>*/}
-            {/*            </tr>*/}
-            {/*        ))}*/}
-            {/*        </tbody>*/}
-
-            {/*    </table>*/}
-            {/*</div>*/}
+            <PageableFooter
+                page={requestPage} // Página atual (começando de 1)
+                itemPerPage={pageSize} // Quantidade de itens por página
+                totalItems={totalElements} // Total de itens no banco
+                quantityItemsList={payments.length} // Itens listados atualmente
+                hasNextPage={requestPage < totalPages} // Se há próxima página
+                onNextPage={(nextPage) => setRequestPage(nextPage)}
+                onBackPage={(backPage) => setRequestPage(backPage)}
+            />
 
 
         </Layout>

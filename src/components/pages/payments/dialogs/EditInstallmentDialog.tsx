@@ -10,10 +10,11 @@ import {MdPayments} from "react-icons/md";
 import {NotePencilIcon} from "@phosphor-icons/react";
 
 interface EditInstallmentDialogProps {
-    installment: InstallmentResponseType
+    installment: InstallmentResponseType;
+    iconSize?: number;
 }
 
-export const EditInstallmentDialog = ({installment}: EditInstallmentDialogProps) => {
+export const EditInstallmentDialog = ({installment, iconSize = 24}: EditInstallmentDialogProps) => {
 
     const {user} = useAuth();
 
@@ -47,7 +48,7 @@ export const EditInstallmentDialog = ({installment}: EditInstallmentDialogProps)
                     notBg={true}
                     theme={ThemeSpan.BLUE}
                 >
-                    <NotePencilIcon size={24} weight={'regular'} color={"#075985"} className={"cursor-pointer inline-flex"}/>
+                    <NotePencilIcon size={iconSize} weight={'regular'} color={"#075985"} className={"cursor-pointer inline-flex"}/>
 
                 </TableSpanButton>
 

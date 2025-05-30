@@ -77,11 +77,13 @@ interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
     cursorText?: boolean;
     isText?: boolean;
     isInputSelected?: boolean;
+    isDark?: boolean;
 }
 
 export function InputText({
                               onClick,
                               title,
+                              isDark,
                               width,
                               notMargin,
                               tagColor,
@@ -92,169 +94,274 @@ export function InputText({
                               children,
                               badgeText,
                               pointer,
-                              isText,
                               isBadge,
                               badgeColor = BadgeColor.YELLOW,
                               compactMode,
                               cursorText,
                               ...rest
                           }: InputTextProps) {
-
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
-    const handleColor = () => {
-
-    }
-
     const handleColorTag = () => {
-        if (tagColor) {
-            return tagColor; // Se tagColor estiver definido, use essa cor independentemente de isFocused
-        } else if (isFocused) {
-            return InputTextColorEnum.DEFAULT; // Se isFocused for verdadeiro e tagColor não estiver definido, use a cor padrão
-        } else {
-            return '#79808c'; // Caso contrário, use outra cor padrão
-        }
-    }
+        return tagColor || (isFocused ? InputTextColorEnum.DEFAULT : '#79808c');
+    };
 
     const handleKeyPress = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (justNumber && !allowDecimal) {
-            if (!/[0-9]/.test(event.key)) {
-                event.preventDefault();
-            }
-        } else if (justNumber && allowDecimal) {
-            if (!/[0-9\.]/.test(event.key)) {
-                event.preventDefault();
-            }
-        }
+        if (!justNumber) return;
+        const pattern = allowDecimal ? /[0-9.]/ : /[0-9]/;
+        if (!pattern.test(event.key)) event.preventDefault();
     };
-    if (compactMode) {
-        return (
-            <Label.Root
-                className={`
-                ${styles.compactLabelRoot}
-                 ${isDisabled ? "bg-gray-100" : ""} 
-                ${isInputSelected ? "border-none" : ""} 
-                ${cursorText ? "cursor-text" : ""}`}
-                style={{
-                    transition: '0.5s',
-                    color: isInputSelected ? "#4A5568" : handleColorTag(), // Cor do texto mais suave
-                    borderColor: isFocused ? '#4A5568' : '#CBD5E0', // Bordas mais suaves
-                    width: width ? width : '100%',
-                    border: isInputSelected ? "none" : "",
-                }}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-            >
-                {title.includes(':') ? title : title + ':'}
 
-                <div
-                    className={`${styles.inputTextContainer} ${isInputSelected ? "relative border border-gray-500 bg-gray-200" : ""}`}
-                    style={isInputSelected ? {
-                        padding: '2px',
-                        backgroundColor: '#E2E8F0', // Fundo mais claro e suave
-                        border: '1px solid #A0AEC0', // Borda mais suave
-                        borderRadius: '4px', // Bordas levemente arredondadas
-                        boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1)', // Sombra interna para efeito retro
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    } : {}}
-                >
-                    <input
-                        onClick={onClick}
-                        id={title.toLowerCase().replace(/ /g, '')}
-                        className={ `${styles.compactInputText} ${cursorText ? "cursor-text" : ""} placeholder-opacity-50 placeholder-gray-100`}
-                        autoComplete={'off'}
-                        onKeyPress={(event) => {
-                            if (justNumber !== undefined && justNumber) {
-                                if (!/[0-9]/.test(event.key))
-                                    event.preventDefault();
-                            }
-                        }}
-                        {...rest}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        style={isInputSelected ? {
-                            padding: '2px',
-                            backgroundColor: '#EDF2F7', // Fundo mais claro
-                            border: '1px solid #A0AEC0', // Borda mais suave
-                            borderRadius: '4px', // Bordas levemente arredondadas
-                            boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1)', // Sombra interna
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                        } : {}}
-                    />
+    const baseClasses = `
+    flex flex-col items-start justify-center w-full p-1 transition-colors duration-500
+    ${isDisabled ? "bg-gray-100" : ""} 
+    ${cursorText ? "cursor-text" : ""}
+  `;
 
-                    {children &&
-                        <div className={styles.compactInputIcon}>
-                            {children}
-                        </div>
-                    }
-                </div>
-            </Label.Root>
-        );
-    }
+    const compactClasses = `
+    ${baseClasses}
+    ${isInputSelected ? "border-none" : "border-b-2 border-gray-300"}
+  `;
 
+    const normalClasses = `
+    ${baseClasses}
+    border-b-2 ${isFocused ? "border-gray-700" : "border-gray-300"}
+  `;
 
+    const inputContainerClasses = compactMode
+        ? `flex items-center gap-1 w-full ${isInputSelected ? "relative border border-gray-500 bg-gray-200 rounded p-0.5" : ""}`
+        : "flex items-center justify-between w-full pt-2";
+
+    const inputClasses = `
+    w-full bg-transparent font-medium outline-none
+    ${isDark ? "text-white": ""}
+    ${compactMode ? "text-xs" : "text-lg"}
+    ${pointer ? "cursor-pointer" : ""} 
+    ${cursorText ? "cursor-text" : ""}
+    ${!notMargin && !compactMode ? "my-1" : "m-0"}
+    placeholder-gray-300 placeholder-opacity-50
+  `;
+
+    const formattedTitle = title?.includes(':') ? title : title + ':';
+    const showBadge = isBadge && badgeText;
 
     return (
         <Label.Root
-
-            className={`
-            ${styles.labelRoot} 
-            ${isDisabled ? "bg-gray-100" : ""}
-            ${cursorText ? "cursor-text" : ""}
-            `}
+            className={compactMode ? compactClasses : normalClasses}
             style={{
-                transition: '0.5s',
-                color: handleColorTag(),
-                // color: isFocused && !tagColor ? '#374151' : '#79808c' ,
-                borderColor: isFocused ? '#374151' : '#D1D5DB',
-                width: width ? width : '100%',
+                color: compactMode && isInputSelected ? "#4A5568" : handleColorTag(),
+                width: width || '100%',
             }}
-            onChange={handleColor}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
         >
-            <div className={"flex gap-1 items-center"}>
-                {title?.includes(':') ? title : title + ':'}
-                {isBadge && badgeText ? (
-                        <span
-                            className={`${badgeColor} text-xs font-medium me-2 px-1 py-0.5 rounded`}>
-                        {badgeText}
-                    </span>
-                    )
-                    : ""
-                }
+            <div className="flex gap-1 items-center">
+                {formattedTitle}
+                {showBadge && (
+                    <span className={`${badgeColor} text-xs font-medium me-2 px-1 py-0.5 rounded`}>
+            {badgeText}
+          </span>
+                )}
             </div>
 
-            <div className={styles.inputTextContainer}>
+            <div className={inputContainerClasses}>
                 <input
                     onClick={onClick}
-                    id={title?.toLowerCase().replace(/ /g, '')}
-                    className={`
-                    ${styles.inputText} focus:ring-0 
-                    ${pointer ? "cursor-pointer" : ""} 
-                    ${cursorText ? "cursor-text" : ""} `}
-                    style={{
-                        margin: !notMargin ? "4px 0" : "0"
-                    }}
-                    autoComplete={'off'}
+                    id={title.toLowerCase().replace(/ /g, '')}
+                    className={inputClasses}
+                    autoComplete="off"
                     onKeyPress={handleKeyPress}
                     {...rest}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-
                 />
 
-                {children &&
-                    <div className={styles.inputIcon}>
+                {children && (
+                    <div className={`flex items-center justify-center h-full ${compactMode ? "w-5" : "w-7"}`}>
                         {children}
                     </div>
-                }
+                )}
             </div>
         </Label.Root>
     );
 }
+
+// export function InputText({
+//                               onClick,
+//                               title,
+//                               width,
+//                               notMargin,
+//                               tagColor,
+//                               isInputSelected,
+//                               isDisabled,
+//                               justNumber,
+//                               allowDecimal,
+//                               children,
+//                               badgeText,
+//                               pointer,
+//                               isText,
+//                               isBadge,
+//                               badgeColor = BadgeColor.YELLOW,
+//                               compactMode,
+//                               cursorText,
+//                               ...rest
+//                           }: InputTextProps) {
+//
+//     const [isFocused, setIsFocused] = useState<boolean>(false);
+//
+//     const handleColor = () => {
+//
+//     }
+//
+//     const handleColorTag = () => {
+//         if (tagColor) {
+//             return tagColor; // Se tagColor estiver definido, use essa cor independentemente de isFocused
+//         } else if (isFocused) {
+//             return InputTextColorEnum.DEFAULT; // Se isFocused for verdadeiro e tagColor não estiver definido, use a cor padrão
+//         } else {
+//             return '#79808c'; // Caso contrário, use outra cor padrão
+//         }
+//     }
+//
+//     const handleKeyPress = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+//         if (justNumber && !allowDecimal) {
+//             if (!/[0-9]/.test(event.key)) {
+//                 event.preventDefault();
+//             }
+//         } else if (justNumber && allowDecimal) {
+//             if (!/[0-9\.]/.test(event.key)) {
+//                 event.preventDefault();
+//             }
+//         }
+//     };
+//     if (compactMode) {
+//         return (
+//             <Label.Root
+//                 className={`
+//                 ${styles.compactLabelRoot}
+//                  ${isDisabled ? "bg-gray-100" : ""}
+//                 ${isInputSelected ? "border-none" : ""}
+//                 ${cursorText ? "cursor-text" : ""}`}
+//                 style={{
+//                     transition: '0.5s',
+//                     color: isInputSelected ? "#4A5568" : handleColorTag(), // Cor do texto mais suave
+//                     borderColor: isFocused ? '#4A5568' : '#CBD5E0', // Bordas mais suaves
+//                     width: width ? width : '100%',
+//                     border: isInputSelected ? "none" : "",
+//                 }}
+//                 onFocus={() => setIsFocused(true)}
+//                 onBlur={() => setIsFocused(false)}
+//             >
+//                 {title.includes(':') ? title : title + ':'}
+//
+//                 <div
+//                     className={`${styles.inputTextContainer} ${isInputSelected ? "relative border border-gray-500 bg-gray-200" : ""}`}
+//                     style={isInputSelected ? {
+//                         padding: '2px',
+//                         backgroundColor: '#E2E8F0', // Fundo mais claro e suave
+//                         border: '1px solid #A0AEC0', // Borda mais suave
+//                         borderRadius: '4px', // Bordas levemente arredondadas
+//                         boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1)', // Sombra interna para efeito retro
+//                         display: 'flex',
+//                         alignItems: 'center',
+//                         gap: '4px',
+//                     } : {}}
+//                 >
+//                     <input
+//                         onClick={onClick}
+//                         id={title.toLowerCase().replace(/ /g, '')}
+//                         className={ `${styles.compactInputText} ${cursorText ? "cursor-text" : ""} placeholder-opacity-50 placeholder-gray-100`}
+//                         autoComplete={'off'}
+//                         onKeyPress={(event) => {
+//                             if (justNumber !== undefined && justNumber) {
+//                                 if (!/[0-9]/.test(event.key))
+//                                     event.preventDefault();
+//                             }
+//                         }}
+//                         {...rest}
+//                         onFocus={() => setIsFocused(true)}
+//                         onBlur={() => setIsFocused(false)}
+//                         style={isInputSelected ? {
+//                             padding: '2px',
+//                             backgroundColor: '#EDF2F7', // Fundo mais claro
+//                             border: '1px solid #A0AEC0', // Borda mais suave
+//                             borderRadius: '4px', // Bordas levemente arredondadas
+//                             boxShadow: 'inset 2px 2px 4px rgba(0, 0, 0, 0.1)', // Sombra interna
+//                             display: 'flex',
+//                             alignItems: 'center',
+//                             gap: '4px',
+//                         } : {}}
+//                     />
+//
+//                     {children &&
+//                         <div className={styles.compactInputIcon}>
+//                             {children}
+//                         </div>
+//                     }
+//                 </div>
+//             </Label.Root>
+//         );
+//     }
+//
+//
+//
+//     return (
+//         <Label.Root
+//
+//             className={`
+//             ${styles.labelRoot}
+//             ${isDisabled ? "bg-gray-100" : ""}
+//             ${cursorText ? "cursor-text" : ""}
+//             `}
+//             style={{
+//                 transition: '0.5s',
+//                 color: handleColorTag(),
+//                 // color: isFocused && !tagColor ? '#374151' : '#79808c' ,
+//                 borderColor: isFocused ? '#374151' : '#D1D5DB',
+//                 width: width ? width : '100%',
+//             }}
+//             onChange={handleColor}
+//         >
+//             <div className={"flex gap-1 items-center"}>
+//                 {title?.includes(':') ? title : title + ':'}
+//                 {isBadge && badgeText ? (
+//                         <span
+//                             className={`${badgeColor} text-xs font-medium me-2 px-1 py-0.5 rounded`}>
+//                         {badgeText}
+//                     </span>
+//                     )
+//                     : ""
+//                 }
+//             </div>
+//
+//             <div className={styles.inputTextContainer}>
+//                 <input
+//                     onClick={onClick}
+//                     id={title?.toLowerCase().replace(/ /g, '')}
+//                     className={`
+//                     ${styles.inputText} focus:ring-0
+//                     ${pointer ? "cursor-pointer" : ""}
+//                     ${cursorText ? "cursor-text" : ""} `}
+//                     style={{
+//                         margin: !notMargin ? "4px 0" : "0"
+//                     }}
+//                     autoComplete={'off'}
+//                     onKeyPress={handleKeyPress}
+//                     {...rest}
+//                     onFocus={() => setIsFocused(true)}
+//                     onBlur={() => setIsFocused(false)}
+//
+//                 />
+//
+//                 {children &&
+//                     <div className={styles.inputIcon}>
+//                         {children}
+//                     </div>
+//                 }
+//             </div>
+//         </Label.Root>
+//     );
+// }
 
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -320,9 +427,6 @@ export enum LebelTextColor {
     QUERY = "text-gray-500",
     MAIN = "text-purple-600",
 }
-
-
-
 
 
 interface InputFileProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -601,8 +705,6 @@ interface InputDropdownSelectProps extends SelectHTMLAttributes<HTMLSelectElemen
 }
 
 
-
-
 interface InputTextPropsRef extends InputHTMLAttributes<HTMLInputElement> {
     title: string;
     width?: string | number;
@@ -744,9 +846,10 @@ interface CurrencyInputTextProps extends CurrencyInputProps {
     children?: ReactNode;
     color?: InputTextColorEnum;
     isDisable?: boolean;
+    isDark?: boolean;
 }
 
-export function CurrencyInputText({title, width, children, isDisable, color, ...rest}: CurrencyInputTextProps) {
+export function CurrencyInputText({title, isDark, width, children, isDisable, color, ...rest}: CurrencyInputTextProps) {
 
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -768,7 +871,7 @@ export function CurrencyInputText({title, width, children, isDisable, color, ...
                     {...rest}
                     prefix={'R$ '}
                     id={title.toLowerCase().replace(/ /g, '')}
-                    className={styles.inputText}
+                    className={`${styles.inputText} ${isDark ? "text-white": "text-gray-700"}`}
                     autoComplete={'off'}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}

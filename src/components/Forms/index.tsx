@@ -9,14 +9,16 @@ interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
     height?: string | number;
     children: ReactNode;
     padding?: number;
+    customStyles?: string;
+
 
 }
 
-export function Form({flexDirection, justifyContent,padding, alignItems, width, height, children, ...rest}: FormProps) {
+export function Form({flexDirection, justifyContent,padding, customStyles, alignItems, width, height, children, ...rest}: FormProps) {
     // @ts-ignore
     return (
         <form
-            className={`${styles.formRoot} ${padding ? "p-"+padding: "p-2"}`}
+            className={`${styles.formRoot} ${padding ? "p-"+padding: "p-2"} ${customStyles}`}
             style={{
                 flexDirection: flexDirection,
                 justifyContent: justifyContent,

@@ -1,10 +1,13 @@
 import {Modal} from "@/components/modal";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useAuth} from "@/hooks/useAuth";
 import {Pencil} from "lucide-react";
-import {Button, ButtonType, UserMenuButton} from "@/components/buttons";
+import {BgColor, Button, ButtonType} from "@/components/buttons";
 import ApiConnection from "@/util/api";
 import {showToastMessage} from "@/util/util";
+import * as Form from "../../../Forms";
+import {CurrencyInputText, InputText} from "@/components/InputText";
+import {CalendarIcon, HandCoinsIcon, MoneyIcon, ReceiptIcon} from "@phosphor-icons/react";
 
 interface GeneratedPaymentsDialogProps {
     reload: () => void;
@@ -61,45 +64,94 @@ export const GeneratedPaymentsDialog = ({reload}: GeneratedPaymentsDialogProps) 
             open={showModal}
             setOpen={setShowModal}
             title={"Gerar parcelas"}
+            width={400}
             trigger={
                 <Button type={ButtonType.BUTTON} value={"Gerar parcelas"} width={"max-content"}>
                     <Pencil size={16}/>
                 </Button>
-
             }
         >
-            <form className="space-y-4">
-                <input
-                    type="text"
-                    placeholder="Valor total"
-                    value={totalAmount}
-                    onChange={(e) => setTotalAmount(e.target.value)}
-                    className="w-full border px-3 py-2 rounded"
-                />
-                <input
-                    type="text"
-                    value={monthlyAmount}
-                    onChange={(e) => setMonthlyAmount(e.target.value)}
-                    placeholder="Valor por parcela"
-                    className="w-full border px-3 py-2 rounded"
-                />
 
-                <input
-                    type="date"
-                    value={initialDate}
-                    onChange={(e) => setInitialDate(e.target.value)}
-                    placeholder="Data inicial"
-                    className="w-full border px-3 py-2 rounded"
-                />
+            <Form.Form flexDirection={"column"}>
+                <Form.FormRows justifyContent={"flex-start"}>
 
-                <button
-                    type="button"
-                    onClick={handleGeneretadePayments}
-                    className="mt-2 bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                    Gerar pareclas
-                </button>
-            </form>
+                    <CurrencyInputText
+                        title={"Valor Total"}
+                        value={totalAmount}
+                        width={"100%"}
+                        placeholder={"Ex.: 3500.00"}
+                        onValueChange={(value) => setTotalAmount(value || "")}
+                    >
+                        <MoneyIcon/>
+                    </CurrencyInputText>
+
+
+                </Form.FormRows>
+                <Form.FormRows justifyContent={"flex-start"}>
+                    <InputText
+                        title={"Valor por Parcela"}
+                        value={monthlyAmount}
+                        width={"100%"}
+                        placeholder={"Ex.: 300.00"}
+                        onChange={(e) => setMonthlyAmount(e.target.value)}
+                    >
+                        <ReceiptIcon/>
+                    </InputText>
+                </Form.FormRows>
+                <Form.FormRows justifyContent={"flex-start"}>
+                    <InputText
+                        type={"date"}
+                        title={"Data inicial das Parcela"}
+                        value={initialDate}
+                        width={"100%"}
+                        placeholder={"Ex.: 300.00"}
+                        onChange={(e) => setInitialDate(e.target.value)}
+                    />
+                </Form.FormRows>
+                <Form.FormRows justifyContent={"flex-start"}>
+                    <Button
+                        width={"max-content"}
+                        type={ButtonType.BUTTON}
+                        value={"Gerar Parcelas"} bgColor={BgColor.GREEN}
+                        onClick={handleGeneretadePayments}
+                    >
+                        <HandCoinsIcon/>
+                    </Button>
+                </Form.FormRows>
+            </Form.Form>
+
+            {/*<form className="space-y-4">*/}
+            {/*    <input*/}
+            {/*        type="text"*/}
+            {/*        placeholder="Valor total"*/}
+            {/*        value={totalAmount}*/}
+            {/*        onChange={(e) => setTotalAmount(e.target.value)}*/}
+            {/*        className="w-full border px-3 py-2 rounded"*/}
+            {/*    />*/}
+            {/*    <input*/}
+            {/*        type="text"*/}
+            {/*        value={monthlyAmount}*/}
+            {/*        onChange={(e) => setMonthlyAmount(e.target.value)}*/}
+            {/*        placeholder="Valor por parcela"*/}
+            {/*        className="w-full border px-3 py-2 rounded"*/}
+            {/*    />*/}
+
+            {/*    <input*/}
+            {/*        type="date"*/}
+            {/*        value={initialDate}*/}
+            {/*        onChange={(e) => setInitialDate(e.target.value)}*/}
+            {/*        placeholder="Data inicial"*/}
+            {/*        className="w-full border px-3 py-2 rounded"*/}
+            {/*    />*/}
+
+            {/*    <button*/}
+            {/*        type="button"*/}
+            {/*        onClick={handleGeneretadePayments}*/}
+            {/*        className="mt-2 bg-blue-600 text-white px-4 py-2 rounded"*/}
+            {/*    >*/}
+            {/*        Gerar pareclas*/}
+            {/*    </button>*/}
+            {/*</form>*/}
 
         </Modal>
     )

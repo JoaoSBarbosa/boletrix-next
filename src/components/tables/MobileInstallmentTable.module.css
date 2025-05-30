@@ -1,0 +1,8 @@
+.mobileTableContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+    width: 100%;
+}
+

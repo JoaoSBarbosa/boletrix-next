@@ -2,8 +2,8 @@
 export interface PageableResponse<T> {
     content: T[];
     pageable: {
-        pageNumber: number;
-        pageSize: number;
+        page_number: number;
+        page_size: number;
         offset: number;
         paged: boolean;
         unpaged: boolean;
@@ -14,8 +14,8 @@ export interface PageableResponse<T> {
         };
     };
     last: boolean;
-    totalPages: number;
-    totalElements: number;
+    total_pages: number;
+    total_elements: number;
     first: boolean;
     size: number;
     number: number;
@@ -24,6 +24,6 @@ export interface PageableResponse<T> {
         unsorted: boolean;
         empty: boolean;
     };
-    numberOfElements: number;
+    number_of_elements: number;
     empty: boolean;
 }

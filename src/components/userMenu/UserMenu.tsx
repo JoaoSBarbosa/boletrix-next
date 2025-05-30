@@ -43,7 +43,7 @@ export const UserMenu = ({onLogout, onEdit, onDelete}: UserMenuProps) => {
             <DropdownMenu.Trigger asChild>
                 <div className={"flex items-center gap-2 cursor-pointer"}>
                     <Avatar.Root
-                        className={"bg-gray-200 text-gray-700 rounded-full w-10 h-10 flex items-center justify-center font-bold uppercase"}>
+                        className={"bg-gray-200 text-gray-700 rounded-full  h-8 w-8 xl:h-10 xl:w-10 flex items-center justify-center font-bold uppercase"}>
                         <Avatar.Fallback delayMs={600}>
                             {getInitials(user?.name)}
                         </Avatar.Fallback>

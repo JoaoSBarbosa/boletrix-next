@@ -1,0 +1,145 @@
+.root {
+    width: 100%;
+    background: #FFFFFF;
+    /*background: #f8fafc;*/
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+
+
+}
+
+.infoIconContainer {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.totalItemsRoot {
+    font-weight: 400;
+    font-size: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 4px;
+}
+
+.listSizeContent {
+    font-weight: 400;
+    font-size: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 4px;
+}
+
+.navigationButtonsContent {
+    width: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.navigationButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    outline: none;
+
+    gap: 8px;
+
+    padding-left: 4px;
+    padding-right: 4px;
+
+    background: #f4f4f5;
+
+    cursor: pointer;
+
+    font-weight: 400;
+    font-size: 12px;
+
+    border-radius: 4px;
+
+    transition: 0.5s;
+}
+
+.navigationButton:disabled {
+    display: none;
+}
+
+.navigationButton:hover {
+    background: #09090b;
+    color: #FFFFFF;
+}
+
+.navigationButton:focus {
+    background: #3f3f46;
+    color: #FFFFFF;
+}
+
+@media ( min-width: 1360px ) and ( max-width: 1600px ) {
+    .infoIconContainer {
+        width: 22px;
+        height: 22px;
+    }
+
+    .totalItemsRoot {
+        font-size: 10px;
+    }
+
+    .listSizeContent {
+        font-size: 10px;
+    }
+
+    .navigationButtonsContent {
+        font-size: 10px;
+    }
+
+    .navigationButton {
+        font-size: 10px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1360px ) {
+    .root{
+        flex-direction: column;
+    }
+    .infoIconContainer {
+        width: 28px;
+        height: 28px;
+    }
+
+    .totalItemsRoot {
+        font-size: 12px;
+    }
+
+    .listSizeContent {
+        font-size: 12px;
+    }
+
+    .navigationButtonsContent {
+        font-size: 12px;
+    }
+
+    .navigationButton {
+        font-size: 12px;
+    }
+}

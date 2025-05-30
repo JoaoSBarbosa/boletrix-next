@@ -1,6 +1,15 @@
 import React, {useEffect, useState} from "react";
 import styles from "./Table.module.css";
-import {recalculateHeightComponent} from "@/util/util";
+import styles2 from "./MobileInstallmentTable.module.css";
+import {cardStatus, formatedDate, recalculateHeightComponent} from "@/util/util";
+import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
+import {Alert} from "@/components/alert";
+import {TableSpanButton, ThemeSpan} from "@/components/buttons";
+import {IoBackspace} from "react-icons/io5";
+import {InstallmentResponseType, StatusType} from "@/types/InstallmentResponseType";
+import * as Form from "../Forms";
+import {CurrencyInputText, InputText} from "@/components/InputText";
+import {CalendarIcon, MoneyIcon, NumberOneIcon, ReceiptIcon} from "@phosphor-icons/react";
 
 export enum AlignmentColumnTableProps {
     CENTRALIZADO = 'center',
@@ -52,7 +61,7 @@ export const DefaultTable = ({
 
     const [widthScreen, setWidthScreen] = useState<number>(0);
     useEffect(() => {
-        if ( window){
+        if (window) {
             setWidthScreen(window.screen.width);
         }
     })
@@ -164,3 +173,130 @@ export const DefaultTable = ({
         </div>
     );
 }
+
+
+interface MobileInstallmentTableProps {
+    list: InstallmentResponseType[];
+    title?: string;
+    onDelete: (id: string | number) => void;
+}
+
+export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmentTableProps) => {
+
+    const handleShowStatus = (status: StatusType) => {
+
+        switch (status) {
+            case "WAITING":
+                return "Aguardando";
+            case "PAID":
+                return "Pago";
+            case "PENDING":
+                return "Pedente"
+            default:
+                return "Desconhecido"
+        }
+    }
+    return (
+        <>
+
+            {list?.map((item, index) => (
+
+                <Form.Form flexDirection={"column"} customStyles={"bg-gray-800 rounded-md mb-4"}>
+                    <Form.FormRows justifyContent={"flex-start"}>
+                        <InputText
+                            isDark={ true }
+                            title={"Nº"}
+                            value={item?.installment_number}
+                            width={"50%"}
+                        >
+                            <NumberOneIcon/>
+                        </InputText>
+                        <CurrencyInputText
+                            title={"Valor"}
+                            isDark={ true }
+                            value={item?.amount}
+                            width={"50%"}
+                        >
+                            <MoneyIcon/>
+                        </CurrencyInputText>
+                    </Form.FormRows>
+                    <Form.FormRows justifyContent={"flex-start"}>
+                        <InputText
+                            isDark={ true }
+                            title={"Status do Pagamento"}
+                            value={handleShowStatus(item?.status)}
+                            width={"100%"}
+                        >
+                            <NumberOneIcon/>
+                        </InputText>
+                    </Form.FormRows>
+
+                    <Form.FormRows justifyContent={"flex-start"}>
+                        <InputText
+                            title={"Parcela"}
+                            value={item?.installment_date ? formatedDate(item.installment_date) : "-"}
+                            width={"50%"}
+                            isDark={ true }
+                        >
+                            <CalendarIcon/>
+                        </InputText>
+
+                        <InputText
+                            title={"Pagamento"}
+                            value={item?.payment_date ? formatedDate(item.payment_date) : "-"}
+                            width={"50%"}
+                            isDark={ true }
+                        >
+                            <CalendarIcon/>
+                        </InputText>
+                    </Form.FormRows>
+
+                    <Form.FormRows justifyContent={"flex-start"}>
+                        <InputText
+                            title={"Comprovante"}
+                            isDark={ true }
+                            value={item?.receipt_url ? item.receipt_url : "-"}
+                            width={"100%"}
+                        >
+                            <ReceiptIcon/>
+                        </InputText>
+
+                    </Form.FormRows>
+
+                    <Form.FormRows justifyContent={"flex-start"}>
+
+                        <EditInstallmentDialog installment={item} iconSize={32}/>
+
+                        <Alert
+                            titleAlert={`Confirmação de Exclusão`}
+                            descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${
+                                item?.id ? "Nº" + item.id : ""
+                            }' do sistema?`}
+                            button={
+                                <TableSpanButton
+                                    info={"Excluir registro de Cliente"}
+                                    width={"max-content"}
+                                    notBg={true}
+                                    theme={ThemeSpan.RED}
+                                >
+                                    <IoBackspace
+                                        size={32}
+                                        color={"#b91c1c"}
+                                        className={"cursor-pointer inline-flex"}
+                                    />
+                                </TableSpanButton>
+                            }
+                            onAccept={() => onDelete(item?.id)}
+                        />
+
+                    </Form.FormRows>
+
+                </Form.Form>
+
+
+            ))}
+        </>
+    );
+};
+
+
