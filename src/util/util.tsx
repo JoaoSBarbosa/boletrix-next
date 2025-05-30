@@ -1,6 +1,7 @@
 import {toast} from "react-toastify";
 import {format, parseISO} from "date-fns";
 import {ptBR} from "date-fns/locale";
+import {StatusType} from "@/types/InstallmentResponseType";
 
 interface ShowToastMessageProps {
     type: 'info' | 'warning' | 'error' | 'success' | 'dark' | 'warn',
@@ -61,4 +62,39 @@ export function recalculateHeightComponent(width: number, componentHeight: strin
         return heightToCalculate + suffix;
     else
         return heightToCalculate;
+}
+
+export const cardStatus = (status: StatusType) =>{
+    if ( status === "" ) return "-";
+
+    let bgCard;
+    let textColor;
+    let textValue;
+
+    switch (status){
+
+        case "PENDING":
+            bgCard = "bg-red-100";
+            textColor = "text-red-800";
+            textValue = "Pendente";
+            break;
+        case "PAID":
+            bgCard = "bg-green-100";
+            textColor = "text-green-800";
+            textValue = "Pago";
+            break;
+        case "WAITING":
+            bgCard = "bg-yellow-100";
+            textColor = "text-yellow-800";
+            textValue = "Aguardando";
+            break;
+        default:
+            bgCard = "bg-gray-100";
+            textColor = "text-gray-800";
+            textValue = "Desconhecido";
+    }
+
+    return (
+        <span className={`inline-flex p-1 rounded-md  ${bgCard} ${textColor}`}>{textValue}</span>
+    )
 }

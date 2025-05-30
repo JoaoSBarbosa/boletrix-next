@@ -1,7 +1,8 @@
 import {useAuth} from "@/hooks/useAuth";
 import {Layout} from "@/components/layout";
 import {useEffect, useState} from "react";
-import {formatedDate, showToastMessage} from "@/util/util";
+import {useMediaQuery} from "react-responsive";
+
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import ApiConnection from "@/util/api";
 import {AxiosResponse} from "axios";
@@ -12,6 +13,8 @@ import {AlignmentColumnTableProps, ColumnTableProps, DefaultTable} from "@/compo
 import {Alert} from "@/components/alert";
 import {IoBackspace} from "react-icons/io5";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
+import {cardStatus, formatedDate, showToastMessage} from "@/util/util";
+import {MobileTable} from "@/components/Forms/mobile/MobileTable";
 
 export default function Payments() {
 
@@ -78,6 +81,14 @@ export default function Payments() {
             width: 160,
             cell: (row: InstallmentResponseType) => row?.installment_date ? formatedDate(row.installment_date) : "-"
         },
+        {
+            id: 'status',
+            selector: 'status',
+            name: 'Status do Pagamento',
+            alignment: AlignmentColumnTableProps.CENTRALIZADO,
+            width: 160,
+            cell: (row: InstallmentResponseType) => cardStatus(row?.status)
+        },
 
         {
             width: 200,
@@ -92,7 +103,8 @@ export default function Payments() {
             selector: 'receipt_url',
             name: "Comprovante",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            width: 200
+            width: 200,
+            cell: (row: InstallmentResponseType) => row?.receipt_url ? row.receipt_url : "-"
         },
         {
             id: 'receipt_url',
@@ -138,10 +150,12 @@ export default function Payments() {
 
     }
 
+    const isMobile = useMediaQuery({maxWidth: 768});
+
     return (
         <Layout>
 
-            <div className={"w-full p-4 border border-gray-200 flex justify-end"}>
+            <div className={"w-full p-4 flex justify-end"}>
 
                 <GeneratedPaymentsDialog reload={() => {
                     fetchPayments().then(setPayments)
@@ -149,12 +163,21 @@ export default function Payments() {
                 {/*<Button type={ButtonType.BUTTON} value={"Gerar parcelas"} width={"max-content"}/>*/}
             </div>
 
-            <DefaultTable
-                columns={clientsTableColumns}
-                list={payments.length > 0 ? payments : []}
-                maxHeight={tableComponentMaxHeight}
-                // backgroundTitle={"#FFFFFF"}
-            />
+            {isMobile ? (
+
+                <div className={"max-h-[65vh] overflow-auto"}>
+                    <MobileTable columns={clientsTableColumns} list={payments}/>
+
+                </div>
+            ) : (
+                <DefaultTable
+                    columns={clientsTableColumns}
+                    list={payments.length > 0 ? payments : []}
+                    maxHeight={tableComponentMaxHeight}
+                    // backgroundTitle={"#FFFFFF"}
+                />
+            )}
+
 
             {/*<div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">*/}
             {/*    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">*/}

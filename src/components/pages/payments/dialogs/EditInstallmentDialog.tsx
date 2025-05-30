@@ -1,8 +1,7 @@
 import {Modal} from "@/components/modal";
 import {useEffect, useState} from "react";
 import {useAuth} from "@/hooks/useAuth";
-import {Pencil} from "lucide-react";
-import {TableSpanButton, ThemeSpan, UserMenuButton} from "@/components/buttons";
+import {TableSpanButton, ThemeSpan} from "@/components/buttons";
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import * as Form from "../../../Forms";
 import {CurrencyInputText, InputText} from "@/components/InputText";

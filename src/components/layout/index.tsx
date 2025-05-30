@@ -1,17 +1,24 @@
 import {Header} from "@/components/layout/header";
 import {Main} from "@/components/layout/main";
+import {Footer} from "@/components/layout/footer";
 
 interface LayoutProps {
     children?: React.ReactNode;
 }
-export const Layout = ({ children }: LayoutProps) => {
 
-    return(
-        <section className={"w-screen h-screen flex flex-col items-center bg-gray-300"}>
+export const Layout = ({children}: LayoutProps) => {
+
+    return (
+        // <section className={"w-screen min-h-[100dvh] flex flex-col items-center bg-gray-50"}>
+        <section className={"w-screen min-h-[100dvh] flex flex-col bg-gray-50"}>
             <Header/>
-            <Main>
-                { children }
-            </Main>
+            <div className="flex-1 w-full">
+                <Main>{children}</Main>
+            </div>
+            {/*<Main>*/}
+            {/*    {children}*/}
+            {/*</Main>*/}
+            <Footer/>
         </section>
     )
 }

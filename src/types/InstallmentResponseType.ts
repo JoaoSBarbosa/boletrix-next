@@ -6,8 +6,9 @@ export type InstallmentResponseType ={
     receipt_url: string;
     receipt_path: string;
     installment_number: string;
+    status: StatusType;
 
 }
 
 
-
+export type StatusType = "PENDING" | "PAID" | "WAITING" | "";
