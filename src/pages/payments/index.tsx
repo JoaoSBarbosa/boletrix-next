@@ -1,6 +1,6 @@
 import {useAuth} from "@/hooks/useAuth";
 import {Layout} from "@/components/layout";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useMediaQuery} from "react-responsive";
 
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
@@ -23,23 +23,40 @@ import {MobileTable} from "@/components/Forms/mobile/MobileTable";
 import {TrashIcon} from "@phosphor-icons/react";
 import Pagination from "@/components/pagination";
 import {PageableFooter} from "@/components/pageable";
+import {useUserLoged} from "@/hooks/useUserLoged";
+import {PrivateRoute} from "@/components/security/PrivateRoute";
+import {useRouter} from "next/router";
 
 export default function Payments() {
 
-    const {user, isAdmin} = useAuth();
-
     const PAGE_SIZE = 10;
     const ITEMS_PER_PAGE = '10';
-    const [payments, setPayments] = useState<InstallmentResponseType[]>([]);
-    const [requestPage, setRequestPage] = useState<number>(1);
+    const {user, isAdmin} = useAuth();
+    const router = useRouter();
 
+    const [date, setDate] = useState("");
+    const [status, setStatus] = useState("");
+    const [hasFilter, setHasFilter] = useState(false);
     const [pageSize, setPageSize] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0); // total de páginas
+    const [requestPage, setRequestPage] = useState<number>(1);
+    const [payments, setPayments] = useState<InstallmentResponseType[]>([]);
     const [totalElements, setTotalElements] = useState<number>(0);
+    const toastShown = useRef(false);
 
-    const [hasFilter, setHasFilter] = useState(false)
-    const [status, setStatus] = useState("");
-    const [date, setDate] = useState("");
+    useEffect(() => {
+        if (!user && !toastShown.current) {
+            showToastMessage({
+                type: "info",
+                message: "Você precisa estar logado para acessar esta página. Faça login para continuar."
+            });
+
+            toastShown.current = true;
+            router.replace("/");
+        }
+    }, [user]);
+
+
 
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
 
@@ -55,15 +72,15 @@ export default function Payments() {
         };
     }, []);
     useEffect(() => {
+        if(!user) return;
         fetchPayments(hasFilter).then(setPayments)
-    }, [])
+    }, [user])
     useEffect(() => {
+        if(!user) return;
         fetchPayments(hasFilter).then(setPayments)
-    }, [requestPage])
+    }, [user, requestPage])
 
-    useEffect(() => {
-        console.log("REQUEST PAGE: ", requestPage)
-    }, [requestPage]);
+
 
     async function fetchPayments(withFilter: boolean) {
 
@@ -244,69 +261,71 @@ export default function Payments() {
     }
 
     const [isClient, setIsClient] = useState(false);
-    const isMobile = useMediaQuery({ maxWidth: 768 });
+    const isMobile = useMediaQuery({maxWidth: 768});
 
     useEffect(() => {
         setIsClient(true);
     }, []);
     return (
-        <Layout>
+        <PrivateRoute>
+            <Layout>
 
-            <div className={"w-full py-2 px-0 xl:py-4 xl:px-4 gap-2 flex justify-end"}>
+                <div className={"w-full py-2 px-0 xl:py-4 xl:px-4 gap-2 flex justify-end"}>
 
-                {payments?.length > 0 &&
-                    <Alert
-                        titleAlert={`Confirmação de Exclusão`}
-                        descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir os registros de pagamentos do sistema? ️`}
-                        button={
+                    {payments?.length > 0 &&
+                        <Alert
+                            titleAlert={`Confirmação de Exclusão`}
+                            descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir os registros de pagamentos do sistema? ️`}
+                            button={
 
-                            <Button
-                                width={"max-content"}
+                                <Button
+                                    width={"max-content"}
 
-                                bgColor={BgColor.RED}
-                                type={ButtonType.BUTTON} value={"Deletar todas"}>
+                                    bgColor={BgColor.RED}
+                                    type={ButtonType.BUTTON} value={"Deletar todas"}>
 
-                                <TrashIcon/>
-                            </Button>
+                                    <TrashIcon/>
+                                </Button>
 
-                        }
-                        onAccept={handleDeleteAll}
-                    />
-                }
-                <GeneratedPaymentsDialog reload={() => {
-                    fetchPayments(false).then(setPayments)
-                }}/>
-            </div>
-
-
-            {!isClient ? null : isMobile ? (
-
-                <div className={"max-h-[55vh] overflow-auto"}>
-                    {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
-                    <MobileInstallmentTable
-                        list={payments}
-                        onDelete={handleDeleteInstallment}
-                    />
+                            }
+                            onAccept={handleDeleteAll}
+                        />
+                    }
+                    <GeneratedPaymentsDialog reload={() => {
+                        fetchPayments(false).then(setPayments)
+                    }}/>
                 </div>
-            ) : (
-                <DefaultTable
-                    columns={clientsTableColumns}
-                    list={payments.length > 0 ? payments : []}
-                    maxHeight={tableComponentMaxHeight}
+
+
+                {!isClient ? null : isMobile ? (
+
+                    <div className={"max-h-[55vh] overflow-auto"}>
+                        {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
+                        <MobileInstallmentTable
+                            list={payments}
+                            onDelete={handleDeleteInstallment}
+                        />
+                    </div>
+                ) : (
+                    <DefaultTable
+                        columns={clientsTableColumns}
+                        list={payments.length > 0 ? payments : []}
+                        maxHeight={tableComponentMaxHeight}
+                    />
+                )}
+                <PageableFooter
+                    page={requestPage} // Página atual (começando de 1)
+                    itemPerPage={pageSize} // Quantidade de itens por página
+                    totalItems={totalElements} // Total de itens no banco
+                    quantityItemsList={payments.length} // Itens listados atualmente
+                    hasNextPage={requestPage < totalPages} // Se há próxima página
+                    onNextPage={(nextPage) => setRequestPage(nextPage)}
+                    onBackPage={(backPage) => setRequestPage(backPage)}
                 />
-            )}
-            <PageableFooter
-                page={requestPage} // Página atual (começando de 1)
-                itemPerPage={pageSize} // Quantidade de itens por página
-                totalItems={totalElements} // Total de itens no banco
-                quantityItemsList={payments.length} // Itens listados atualmente
-                hasNextPage={requestPage < totalPages} // Se há próxima página
-                onNextPage={(nextPage) => setRequestPage(nextPage)}
-                onBackPage={(backPage) => setRequestPage(backPage)}
-            />
 
 
-        </Layout>
+            </Layout>
+        </PrivateRoute>
 
     )
 };

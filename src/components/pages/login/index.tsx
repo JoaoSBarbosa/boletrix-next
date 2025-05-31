@@ -7,7 +7,8 @@ import {useRouter} from "next/router";
 import {useAuth} from "@/hooks/useAuth";
 import * as Form from "../../Forms";
 import {InputText} from "@/components/InputText";
-import {FaKey} from "react-icons/fa";
+import {FaEnvelope, FaKey} from "react-icons/fa";
+import {EnvelopeIcon} from "@phosphor-icons/react";
 
 interface LoginProps {
     setAction: (action: "login" | "register" | "") => void;
@@ -23,14 +24,9 @@ export const Login = ({setAction}:LoginProps) => {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("CHAMOU O SUBMIT");
-        console.log("ACTIVEFORM", activeForm);
-
         if (activeForm === "login") {
-            console.log("Login", {email, password});
             await handleLogin();
         }
-
         if (activeForm === "recover") {
             console.log("Recuperar senha", {email});
         }
@@ -43,17 +39,12 @@ export const Login = ({setAction}:LoginProps) => {
                 password
             })
 
-
             const receivedToken = data?.data?.token;
-            console.log("LOGIN", data);
-
             login(receivedToken)
-
             showToastMessage({
                 type: 'success',
                 message: 'Login realizado com sucesso!'
             });
-
             await router.push("/payments");
 
         } catch (error) {
@@ -86,7 +77,7 @@ export const Login = ({setAction}:LoginProps) => {
                             placeholder={"Ex.: usuario@gmail.com"}
                             onChange={(e) => setEmail(e.target.value)}
                         >
-                            <FaKey size={'16px'}/>
+                            <FaEnvelope size={'16px'}/>
                         </InputText>
 
 
@@ -98,6 +89,7 @@ export const Login = ({setAction}:LoginProps) => {
                             value={password}
                             title={'Senha'}
                             width={'100%'}
+                            type={"password"}
                             placeholder={"Ex.: @Senha45Fort%48*"}
                             onChange={(e) => setPassword(e.target.value)}
                         >
