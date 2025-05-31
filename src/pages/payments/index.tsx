@@ -19,19 +19,16 @@ import {Alert} from "@/components/alert";
 import {IoBackspace} from "react-icons/io5";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
 import {cardStatus, formatedDate, showToastMessage} from "@/util/util";
-import {MobileTable} from "@/components/Forms/mobile/MobileTable";
-import {TrashIcon} from "@phosphor-icons/react";
-import Pagination from "@/components/pagination";
 import {PageableFooter} from "@/components/pageable";
-import {useUserLoged} from "@/hooks/useUserLoged";
 import {PrivateRoute} from "@/components/security/PrivateRoute";
 import {useRouter} from "next/router";
+import {ActionsDropdown} from "@/components/pages/payments/components/actionsDropdown";
 
 export default function Payments() {
 
     const PAGE_SIZE = 10;
     const ITEMS_PER_PAGE = '10';
-    const {user, isAdmin} = useAuth();
+    const {user, isAdmin, setIsAuthLoading, isAuthLoading} = useAuth();
     const router = useRouter();
 
     const [date, setDate] = useState("");
@@ -44,18 +41,41 @@ export default function Payments() {
     const [totalElements, setTotalElements] = useState<number>(0);
     const toastShown = useRef(false);
 
+    // useEffect(() => {
+    //     console.log("TEM USAURIO? ", user)
+    //     if (!user && !toastShown.current) {
+    //         showToastMessage({
+    //             type: "info",
+    //             message: "Você precisa estar logado para acessar esta página. Faça login para continuar."
+    //         });
+    //
+    //         toastShown.current = true;
+    //         router.replace("/");
+    //     }
+    // }, [user]);
+
     useEffect(() => {
-        if (!user && !toastShown.current) {
+        if (isAuthLoading) return; // Aguarda o carregamento da autenticação
+        console.log("TEM USAURIO? ", user)
+        if (!user) {
             showToastMessage({
                 type: "info",
                 message: "Você precisa estar logado para acessar esta página. Faça login para continuar."
             });
-
-            toastShown.current = true;
-            router.replace("/");
+            router.replace("/").then(r => {
+                showToastMessage({
+                    type: "success",
+                    message: "Redirecionando para a tela de login."
+                });
+            });
+            return;
+        }else {
+            console.log("TEM USAURIO SIM")
         }
-    }, [user]);
 
+        // Se chegou aqui, o usuário está autenticado
+        // fetchPayments(hasFilter).then(setPayments);
+    }, [user, isAuthLoading, requestPage]);
 
 
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
@@ -72,14 +92,13 @@ export default function Payments() {
         };
     }, []);
     useEffect(() => {
-        if(!user) return;
+        if (!user) return;
         fetchPayments(hasFilter).then(setPayments)
     }, [user])
     useEffect(() => {
-        if(!user) return;
+        if (!user) return;
         fetchPayments(hasFilter).then(setPayments)
     }, [user, requestPage])
-
 
 
     async function fetchPayments(withFilter: boolean) {
@@ -115,7 +134,6 @@ export default function Payments() {
             setTotalPages(data?.total_pages);
             setTotalElements(data?.total_elements);
             setPageSize(data?.size)
-            console.log("response", data);
         } catch (error) {
             paymentsData = [];
             setTotalPages(0);
@@ -127,10 +145,6 @@ export default function Payments() {
         return paymentsData;
     }
 
-    const handlePageChange = (newPage: number) => {
-        console.log("chamou o handle page change")
-        setRequestPage(newPage)
-    }
 
     const clientsTableColumns = [
         {
@@ -270,35 +284,18 @@ export default function Payments() {
         <PrivateRoute>
             <Layout>
 
-                <div className={"w-full py-2 px-0 xl:py-4 xl:px-4 gap-2 flex justify-end"}>
+                {user?.roles?.includes("ROLE_ADMIN") &&
 
-                    {payments?.length > 0 &&
-                        <Alert
-                            titleAlert={`Confirmação de Exclusão`}
-                            descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir os registros de pagamentos do sistema? ️`}
-                            button={
-
-                                <Button
-                                    width={"max-content"}
-
-                                    bgColor={BgColor.RED}
-                                    type={ButtonType.BUTTON} value={"Deletar todas"}>
-
-                                    <TrashIcon/>
-                                </Button>
-
-                            }
-                            onAccept={handleDeleteAll}
-                        />
-                    }
-                    <GeneratedPaymentsDialog reload={() => {
-                        fetchPayments(false).then(setPayments)
-                    }}/>
-                </div>
-
+                    <ActionsDropdown
+                        length={payments?.length}
+                        handleDeleteAll={handleDeleteAll}
+                        reload={() => {
+                            fetchPayments(false).then(setPayments)
+                        }}
+                    />
+                }
 
                 {!isClient ? null : isMobile ? (
-
                     <div className={"max-h-[55vh] overflow-auto"}>
                         {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
                         <MobileInstallmentTable
@@ -322,10 +319,9 @@ export default function Payments() {
                     onNextPage={(nextPage) => setRequestPage(nextPage)}
                     onBackPage={(backPage) => setRequestPage(backPage)}
                 />
-
-
             </Layout>
         </PrivateRoute>
 
     )
-};
+}
+;

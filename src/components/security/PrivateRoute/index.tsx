@@ -1,4 +1,28 @@
-import {ReactNode, useEffect} from "react";
+// import {ReactNode, useEffect} from "react";
+// import {useAuth} from "@/hooks/useAuth";
+// import {useRouter} from "next/router";
+//
+// interface PrivateRouteProps {
+//     children: ReactNode;
+// }
+//
+// export const PrivateRoute = ({children}: PrivateRouteProps) => {
+//
+//     const {token} = useAuth();
+//     const router = useRouter();
+//
+//     useEffect(() => {
+//         if (!token) {
+//             router.replace("/")
+//         }
+//     }, [token]);
+//
+//     if (!token) return null; // Evita flicker
+//
+//     return <>{children} </>
+// }
+
+import {ReactNode, useEffect, useState} from "react";
 import {useAuth} from "@/hooks/useAuth";
 import {useRouter} from "next/router";
 
@@ -7,17 +31,21 @@ interface PrivateRouteProps {
 }
 
 export const PrivateRoute = ({children}: PrivateRouteProps) => {
-
-    const {token} = useAuth();
+    const {token, isAuthLoading} = useAuth();
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!token) {
-            router.replace("/")
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthLoading && !token) {
+            router.replace("/");
         }
-    }, [token]);
+    }, [token, isAuthLoading]);
 
-    if (!token) return null; // Evita flicker
+    if (!mounted || isAuthLoading) return null;
 
-    return <>{children} </>
+    return <>{children}</>;
 }

@@ -170,7 +170,7 @@ import { HiOutlineUserPlus } from "react-icons/hi2";
 import { FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 
-import { InputText } from "@/components/InputText";
+import { InputText } from "../../inputs/InputText";
 import { Button, ButtonType } from "@/components/buttons";
 import ApiConnection from "@/util/api";
 import { showToastMessage } from "@/util/util";

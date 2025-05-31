@@ -6,14 +6,25 @@ import {BgColor, Button, ButtonType} from "@/components/buttons";
 import ApiConnection from "@/util/api";
 import {showToastMessage} from "@/util/util";
 import * as Form from "../../../Forms";
-import {CurrencyInputText, InputText} from "@/components/InputText";
-import {CalendarIcon, HandCoinsIcon, MoneyIcon, ReceiptIcon} from "@phosphor-icons/react";
+import {CurrencyInputText, InputText} from "../../../inputs/InputText";
+import {CalendarIcon, HandCoinsIcon, MoneyIcon, ReceiptIcon, TrashIcon} from "@phosphor-icons/react";
+import {DropdownItemButton} from "@/components/dropdown";
+
+
+export enum ButtonTypeEnum {
+    DEFAULT = "default",
+    DROPDOWN = "dropdown"
+}
 
 interface GeneratedPaymentsDialogProps {
     reload: () => void;
+    buttonType?: ButtonTypeEnum
 }
 
-export const GeneratedPaymentsDialog = ({reload}: GeneratedPaymentsDialogProps) => {
+export const GeneratedPaymentsDialog = ({
+                                            reload,
+                                            buttonType = ButtonTypeEnum.DEFAULT
+                                        }: GeneratedPaymentsDialogProps) => {
 
     const {user} = useAuth();
 
@@ -59,22 +70,35 @@ export const GeneratedPaymentsDialog = ({reload}: GeneratedPaymentsDialogProps) 
         }
     }
 
+    const displayButtonType = () => {
+        switch (buttonType) {
+            case ButtonTypeEnum.DROPDOWN:
+                return (
+                    <DropdownItemButton label="Gerar parcelas">
+                        <Pencil size={16} />
+                    </DropdownItemButton>
+                );
+
+            case ButtonTypeEnum.DEFAULT:
+            default:
+                return (
+                    <Button type={ButtonType.BUTTON} value="Gerar parcelas" width="max-content">
+                        <Pencil size={16} />
+                    </Button>
+                );
+        }
+    };
+
     return (
         <Modal
             open={showModal}
             setOpen={setShowModal}
             title={"Gerar parcelas"}
             width={400}
-            trigger={
-                <Button type={ButtonType.BUTTON} value={"Gerar parcelas"} width={"max-content"}>
-                    <Pencil size={16}/>
-                </Button>
-            }
+            trigger={displayButtonType()}
         >
-
             <Form.Form flexDirection={"column"}>
                 <Form.FormRows justifyContent={"flex-start"}>
-
                     <CurrencyInputText
                         title={"Valor Total"}
                         value={totalAmount}

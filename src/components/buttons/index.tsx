@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
 
 export enum ButtonType {
     RESET = "reset",
@@ -9,12 +9,28 @@ export enum ButtonType {
 
 export enum BgColor {
     BLUE = "bg-blue-500 text-white",
-    DARK = "bg-blue-700",
-    DARKER = "bg-blue-800",
     RED = "bg-red-500",
     GREEN = "bg-green-500",
     YELLOW = "bg-yellow-500",
     PURPLE = "bg-purple-500",
+    SLATE = "bg-slate-700 text-white",
+    ZINC = "bg-zinc-800 text-white",
+    NEUTRAL = "bg-neutral-700 text-white",
+    STONE = "bg-stone-600 text-white",
+    DARK = "bg-gray-800 text-white",
+    DARKER = "bg-gray-900 text-white",
+    BLACK = "bg-black text-white",
+
+    SECONDARY = "bg-tertiary text-white",
+    ACCENT_BLUE = "bg-blue-500 text-white", // #3B82F6 (azul celeste vibrante)
+    SUCCESS = "bg-lime-500 text-white",      // #84CC16 (verde limão vibrante)
+    WARNING = "bg-orange-500 text-white",    // #F97316 (laranja vivo)
+    PINK = "bg-pink-500 text-white",
+
+    SUCCESS_2 = "bg-[#3EB489] text-white",       // Verde Menta, alegre e natural
+    WARNING_2 = "bg-[#D4A017] text-white",       // Amarelo Mostarda, vibrante mas sóbrio
+    ACCENT = "bg-[#FF6F61] text-white",        // Coral Suave, quente e vibrante
+    INFO = "bg-[#3A8DFF] text-white"
 }
 
 interface ButtonProps {
@@ -36,11 +52,13 @@ export const Button = ({
                            bgColor = BgColor.BLUE,
                            type = ButtonType.BUTTON,
                            onClick,
-                           width
+                           width,
+                           ...rest
                        }: ButtonProps) => {
 
     return (
         <button
+            {...rest}
             disabled={disabled}
             style={{width: width ? width : "100%"}}
             onClick={onClick}
@@ -55,6 +73,61 @@ export const Button = ({
         </button>
     )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const ButtonRef = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+        {
+            title,
+            children,
+            disabled,
+            value,
+            bgColor = BgColor.BLUE,
+            type = ButtonType.BUTTON,
+            onClick,
+            width,
+            ...rest
+        },
+        ref
+    ) => {
+        return (
+            <button
+                {...rest}
+                ref={ref}
+                disabled={disabled}
+                style={{ width: width ? width : "100%" }}
+                onClick={onClick}
+                title={title}
+                type={type}
+                className={`
+                    w-full flex items-center gap-2 text-white ${bgColor} font-medium rounded-lg 
+                    text-sm px-5 py-2.5 text-center mb-2`}
+            >
+                {children}
+                {value}
+            </button>
+        );
+    }
+);
+
+ButtonRef.displayName = "ButtonRef";
+
+
 
 interface UserMenuButtonProps {
 

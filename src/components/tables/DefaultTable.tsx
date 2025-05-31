@@ -8,7 +8,7 @@ import {TableSpanButton, ThemeSpan} from "@/components/buttons";
 import {IoBackspace} from "react-icons/io5";
 import {InstallmentResponseType, StatusType} from "@/types/InstallmentResponseType";
 import * as Form from "../Forms";
-import {CurrencyInputText, InputText} from "@/components/InputText";
+import {CurrencyInputText, InputText} from "../inputs/InputText";
 import {CalendarIcon, MoneyIcon, NumberOneIcon, ReceiptIcon} from "@phosphor-icons/react";
 
 export enum AlignmentColumnTableProps {

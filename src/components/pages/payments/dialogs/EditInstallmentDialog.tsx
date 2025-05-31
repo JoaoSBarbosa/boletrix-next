@@ -4,7 +4,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {TableSpanButton, ThemeSpan} from "@/components/buttons";
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import * as Form from "../../../Forms";
-import {CurrencyInputText, InputText} from "@/components/InputText";
+import {CurrencyInputText, InputText} from "../../../inputs/InputText";
 import {FaKey} from "react-icons/fa";
 import {MdPayments} from "react-icons/md";
 import {NotePencilIcon} from "@phosphor-icons/react";

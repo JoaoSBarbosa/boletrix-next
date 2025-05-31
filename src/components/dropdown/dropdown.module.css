@@ -1,0 +1,26 @@
+/* components/dropdown-menu.css */
+
+.DropdownMenuContent {
+
+
+
+}
+
+.DropdownMenuItem {
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.DropdownMenuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.DropdownMenuArrow {
+    fill: white;
+}

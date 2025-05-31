@@ -6,7 +6,7 @@ import {showToastMessage} from "@/util/util";
 import {useRouter} from "next/router";
 import {useAuth} from "@/hooks/useAuth";
 import * as Form from "../../Forms";
-import {InputText} from "@/components/InputText";
+import {InputText} from "../../inputs/InputText";
 import {FaEnvelope, FaKey} from "react-icons/fa";
 import {EnvelopeIcon} from "@phosphor-icons/react";
 
@@ -64,6 +64,7 @@ export const Login = ({setAction}:LoginProps) => {
                 </h1>
 
                 <Form.Form
+                    padding={1}
                     flexDirection={"column"}
                     onSubmit={handleSubmit}
                 >

@@ -41,14 +41,14 @@ export const UserMenu = ({onLogout, onEdit, onDelete}: UserMenuProps) => {
     return (
         <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenu.Trigger asChild>
-                <div className={"flex items-center gap-2 cursor-pointer"}>
+                <div className={"flex items-center gap-2 cursor-pointer text-secondaryColor"}>
                     <Avatar.Root
-                        className={"bg-gray-200 text-gray-700 rounded-full  h-8 w-8 xl:h-10 xl:w-10 flex items-center justify-center font-bold uppercase"}>
+                        className={"bg-quaternary rounded-full  h-8 w-8 xl:h-10 xl:w-10 flex items-center justify-center font-bold uppercase"}>
                         <Avatar.Fallback delayMs={600}>
                             {getInitials(user?.name)}
                         </Avatar.Fallback>
                     </Avatar.Root>
-                    <span className="text-sm font-medium text-gray-200">{user.name}</span>
+                    <span className="text-sm font-medium">{user.name}</span>
                     {/*<span className="text-sm font-medium text-gray-200">{user.name}</span>*/}
                     {/*<IoIosArrowDown />*/}
                     {isOpen ? <IoIosArrowUp/> : <IoIosArrowDown/>}
