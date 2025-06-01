@@ -1,9 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import {ReactNode} from "react";
 import styles from "./Modal.module.css";
-import {X} from "@phosphor-icons/react";
+import {X, XIcon} from "@phosphor-icons/react";
+import {DialogProps} from "@radix-ui/react-dialog";
 
-interface ModalProps {
+interface ModalProps extends DialogProps {
     title?: string;
     description?: string;
     open: boolean;
@@ -15,6 +16,7 @@ interface ModalProps {
     maxHeight?: string | number;
     minHeight?: string | number;
     idProps?: string;
+    padding?: string;
 }
 
 export const Modal = ({
@@ -28,6 +30,7 @@ export const Modal = ({
                           setOpen,
                           trigger,
                           open,
+                          padding = "p-6",
                           children
                       }: ModalProps) => {
 
@@ -36,7 +39,6 @@ export const Modal = ({
             setOpen(false);
         }
     };
-
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
@@ -46,12 +48,12 @@ export const Modal = ({
                 <Dialog.Overlay className="bg-black/40 fixed inset-0 z-40" onClick={handleClose}/>
                 <Dialog.Content
                     style={{
-                        width: width,
+                        width: typeof width === "number" ? `${width}px` : width,
                         height: height ? height : '',
                         maxHeight: maxHeight ? maxHeight : '',
                         minHeight: minHeight ? minHeight : '',
                     }}
-                    className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-900 p-6 rounded-md shadow-lg"
+                    className={`fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-900  rounded-md shadow-lg ${padding}`}
                 >
                     {title && (
                         <Dialog.Title className="text-lg font-semibold mb-2">
@@ -74,7 +76,7 @@ export const Modal = ({
                             aria-label="Fechar"
                             onClick={handleClose} // Chame a função handleClose quando o botão de fechar for clicado
                         >
-                            <X size={'60%'} weight={'bold'}/>
+                            <XIcon size={'60%'} weight={'bold'}/>
                         </button>
                     </Dialog.Close>
                 </Dialog.Content>

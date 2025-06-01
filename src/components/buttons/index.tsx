@@ -8,6 +8,12 @@ export enum ButtonType {
 
 
 export enum BgColor {
+
+    PRIMARY_SYSTEM = "bg-[#00384D] text-white",   // Azul escuro institucional
+    SECONDARY_SYSTEM = "bg-[#E5B96C] text-black", // Bege claro dourado
+    TERTIARY_SYSTEM = "bg-[#B8860B] text-white",  // Ouro queimado
+    QUATERNARY_SYSTEM = "bg-[#8B6508] text-white", // Bronze escuro
+
     BLUE = "bg-blue-500 text-white",
     RED = "bg-red-500",
     GREEN = "bg-green-500",
