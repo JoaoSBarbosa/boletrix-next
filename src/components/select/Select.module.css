@@ -1,0 +1,250 @@
+.selectionContent {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+
+    font-weight: 300;
+    font-size: 12px;
+
+    border-width: 0 0 2px 0;
+    border-style: solid;
+    border-color: #DCDCDC;
+
+    transition: 0.5s;
+
+    padding: 4px;
+
+    color: #9CA3AF;
+
+
+}
+
+.compactSelectionContent {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+
+    font-weight: 400;
+    font-size: 10px;
+
+    border-width: 0 0 2px 0;
+    border-style: solid;
+    border-color: #DCDCDC;
+
+    transition: 0.5s;
+
+    padding: 4px;
+
+    color: #9CA3AF;
+}
+
+.selectionContainer {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.selectTrigger {
+    width: 100%;
+    height: 100%;
+
+    text-wrap: nowrap;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-weight: 500;
+    font-size: 14px;
+
+    color: #000000;
+
+    background: transparent;
+
+    outline: none;
+}
+
+.selectionContent:focus-within {
+    background: #f8fafc;
+}
+
+.compactSelectTrigger {
+    width: 100%;
+    height: 100%;
+
+    text-wrap: nowrap;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-weight: 500;
+    font-size: 12px;
+
+    color: #000000;
+
+    text-align: left;
+
+    background: transparent;
+
+    outline: none;
+}
+
+.compactSelectionIcon {
+    width: 20px;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    color: #9CA3AF;
+}
+
+.selectContent {
+    overflow: hidden;
+
+    background: #FFFFFF;
+
+    box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+    z-index: 999;
+
+    border-radius: 4px;
+
+}
+
+.selectScrollButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 30px;
+}
+
+.selectViewport {
+    padding: 5px;
+}
+
+.selectLabel {
+    padding: 14px;
+
+    font-size: 11px;
+    font-weight: 300;
+
+    color: #839192;
+}
+
+.selectItem {
+    padding-left: 20px;
+
+    height: 35px;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+
+    outline: none;
+
+    transition: 0.5s;
+}
+
+.selectItem:hover {
+    background: #DCDCDC;
+}
+
+.selectItem:focus {
+    background: #DCDCDC;
+}
+
+.selectItemIndicator {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media ( min-width: 1360px ) and ( max-width: 1600px ) {
+    .selectionContent {
+        height: 45px;
+
+        font-size: 10px;
+    }
+
+    .selectTrigger {
+        font-size: 12px;
+    }
+
+    .selectScrollButton {
+        height: 25px;
+    }
+
+    .selectLabel {
+        font-size: 10px;
+    }
+
+    .selectItem {
+        height: 30px;
+
+        font-size: 12px;
+    }
+
+    .selectItemIndicator {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media ( min-width: 0px ) and ( max-width: 1360px ) {
+    .selectionContent {
+        height: 40px;
+
+        font-size: 10px;
+    }
+
+    .selectTrigger {
+        font-size: 13px;
+    }
+
+    .selectScrollButton {
+        height: 20px;
+    }
+
+    .selectLabel {
+        font-size: 9px;
+    }
+
+    .selectItem {
+        height: 25px;
+
+        font-size: 11px;
+    }
+
+    .selectItemIndicator {
+        width: 25px;
+        height: 25px;
+    }
+
+
+    .compactSelectionContent {
+        font-size: 8px;
+    }
+
+    .compactSelectTrigger {
+        font-size: 10px;
+    }
+}

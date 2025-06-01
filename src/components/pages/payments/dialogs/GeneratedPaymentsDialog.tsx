@@ -9,6 +9,7 @@ import * as Form from "../../../Forms";
 import {CurrencyInputText, InputText} from "../../../inputs/InputText";
 import {CalendarIcon, HandCoinsIcon, MoneyIcon, ReceiptIcon, TrashIcon} from "@phosphor-icons/react";
 import {DropdownItemButton} from "@/components/dropdown";
+import {useWindowSize} from "@/hooks/useWindowSize";
 
 
 export enum ButtonTypeEnum {
@@ -32,7 +33,8 @@ export const GeneratedPaymentsDialog = ({
     const [totalAmount, setTotalAmount] = useState<string>("");
     const [monthlyAmount, setMonthlyAmount] = useState<string>("");
     const [initialDate, setInitialDate] = useState<string>("");
-
+    const { width } = useWindowSize();
+    const isSmallScreen = width <= 640;
     // useEffect(() => {
     //     if (user) {
     //         setTotalAmount(user.name);
@@ -94,7 +96,7 @@ export const GeneratedPaymentsDialog = ({
             open={showModal}
             setOpen={setShowModal}
             title={"Gerar parcelas"}
-            width={400}
+            width={isSmallScreen ? "95%": 400}
             trigger={displayButtonType()}
         >
             <Form.Form flexDirection={"column"}>

@@ -23,6 +23,7 @@ import {PageableFooter} from "@/components/pageable";
 import {PrivateRoute} from "@/components/security/PrivateRoute";
 import {useRouter} from "next/router";
 import {ActionsDropdown} from "@/components/pages/payments/components/actionsDropdown";
+import {FiltersDropdown, status} from "@/components/pages/payments/components/filters";
 
 export default function Payments() {
 
@@ -31,8 +32,12 @@ export default function Payments() {
     const {user, isAdmin, setIsAuthLoading, isAuthLoading} = useAuth();
     const router = useRouter();
 
-    const [date, setDate] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState<status>("");
+    const [invoiceDate, setInvoiceDate] = useState("");
+    const [installmentNumber, setInstallmentNumber] = useState("");
+    const [amount, setAmount] = useState("");
+    const [paymentDate, setPaymentDate] = useState("");
+
     const [hasFilter, setHasFilter] = useState(false);
     const [pageSize, setPageSize] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0); // total de páginas
@@ -40,23 +45,11 @@ export default function Payments() {
     const [payments, setPayments] = useState<InstallmentResponseType[]>([]);
     const [totalElements, setTotalElements] = useState<number>(0);
     const toastShown = useRef(false);
-
-    // useEffect(() => {
-    //     console.log("TEM USAURIO? ", user)
-    //     if (!user && !toastShown.current) {
-    //         showToastMessage({
-    //             type: "info",
-    //             message: "Você precisa estar logado para acessar esta página. Faça login para continuar."
-    //         });
-    //
-    //         toastShown.current = true;
-    //         router.replace("/");
-    //     }
-    // }, [user]);
+    const [isClient, setIsClient] = useState(false);
+    const isMobile = useMediaQuery({maxWidth: 768});
 
     useEffect(() => {
         if (isAuthLoading) return; // Aguarda o carregamento da autenticação
-        console.log("TEM USAURIO? ", user)
         if (!user) {
             showToastMessage({
                 type: "info",
@@ -69,18 +62,14 @@ export default function Payments() {
                 });
             });
             return;
-        }else {
-            console.log("TEM USAURIO SIM")
         }
 
         // Se chegou aqui, o usuário está autenticado
         // fetchPayments(hasFilter).then(setPayments);
     }, [user, isAuthLoading, requestPage]);
-
-
-    const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
-
-
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
     useEffect(() => {
         const handleResize = () => {
             setTableComponentMaxHeight(window.innerWidth <= 1366 ? '50vh' : '70vh');
@@ -100,56 +89,11 @@ export default function Payments() {
         fetchPayments(hasFilter).then(setPayments)
     }, [user, requestPage])
 
-
-    async function fetchPayments(withFilter: boolean) {
-
-        let paymentsData = [] as InstallmentResponseType[];
-
-
-        let paramsList = [] as string[];
-        paramsList.push("size=" + ITEMS_PER_PAGE);
-        paramsList.push("page=" + (requestPage - 1));
-
-        if (withFilter) {
-            setHasFilter(true);
-            if (status) paramsList.push("status=" + status);
-            if (date) paramsList.push("paymentsData=" + date);
-        } else {
-            setHasFilter(false)
-        }
-        // let paramsPayments = "?";
-        // for (const paramItem of paramsList) {
-        //     paramsPayments += paramItem + "&"
-        // }
-        let paramsPayments = `?`; // Spring usa paginação começando em 0
-        for (const paramItem of paramsList) {
-            paramsPayments += paramItem + "&"
-        }
-
-        try {
-            const {data}: AxiosResponse<PageableResponse<InstallmentResponseType>> = await ApiConnection(window.location.href).get(`/installments${paramsPayments}`, {
-                timeout: 5 * 60 * 1000
-            })
-            paymentsData = data.content;
-            setTotalPages(data?.total_pages);
-            setTotalElements(data?.total_elements);
-            setPageSize(data?.size)
-        } catch (error) {
-            paymentsData = [];
-            setTotalPages(0);
-            showToastMessage({
-                type: "error",
-                message: "Erro ao tentar obter a lista de boletos: " + error,
-            })
-        }
-        return paymentsData;
-    }
-
-
+    const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
     const clientsTableColumns = [
         {
-            id: 'installment_number',
-            selector: 'installment_number',
+            id: 'installmentNumber',
+            selector: 'installmentNumber',
             name: "Nº",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 50
@@ -162,12 +106,13 @@ export default function Payments() {
             width: 100
         },
         {
-            id: 'installment_date',
-            selector: 'installment_date',
+            id: 'installmentDate',
+            selector: 'installmentDate',
             name: 'Data parcela',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
-            cell: (row: InstallmentResponseType) => row?.installment_date ? formatedDate(row.installment_date) : "-"
+            cell: (row: InstallmentResponseType) => row?.installmentDate ? formatedDate(row.installmentDate) : "-"
+
         },
         {
             id: 'status',
@@ -176,31 +121,34 @@ export default function Payments() {
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
             cell: (row: InstallmentResponseType) => cardStatus(row?.status)
+
         },
 
         {
             width: 200,
-            id: 'payment_date',
+            id: 'paymentDate',
             name: "Data Pagamento",
-            selector: 'payment_date',
+            selector: 'paymentDate',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            cell: (row: InstallmentResponseType) => row?.payment_date ? formatedDate(row.payment_date) : "-"
+            cell: (row: InstallmentResponseType) => row?.paymentDate ? displayDateTime(row.paymentDate, row?.paymentTime) : "-"
+
         },
         {
-            id: 'receipt_url',
-            selector: 'receipt_url',
+            id: 'receiptUrl',
+            selector: 'receiptUrl',
             name: "Comprovante",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            cell: (row: InstallmentResponseType) => row?.receipt_url ? row.receipt_url : "-"
+            cell: (row: InstallmentResponseType) => row?.receiptUrl ? row.receiptUrl : "-"
         },
         {
-            id: 'receipt_url',
-            selector: 'receipt_url',
+            id: 'receiptUrl',
+            selector: 'receiptUrl',
             name: "Editar",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row}/>
+            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row}
+                                                                           reload={updateSinglePayment}/>
         },
         {
             id: 'receipt_url',
@@ -232,6 +180,63 @@ export default function Payments() {
                 />
         },
     ] as ColumnTableProps[];
+
+    const displayDateTime = (date: string, time: string) => {
+
+        const formattedDate = formatedDate(date);
+
+        if (formattedDate && time) {
+            return `${formattedDate} às ${time}`
+        } else if (formattedDate) {
+            return formattedDate
+        } else {
+            return `--`
+        }
+
+    }
+
+    async function fetchPayments(withFilter: boolean) {
+
+        let paymentsData = [] as InstallmentResponseType[];
+
+
+        let paramsList = [] as string[];
+        paramsList.push("size=" + ITEMS_PER_PAGE);
+        paramsList.push("page=" + (requestPage - 1));
+
+        if (withFilter) {
+            setHasFilter(true);
+            if (status) paramsList.push("status=" + status);
+            if (amount) paramsList.push("amount=" + amount);
+            if (paymentDate) paramsList.push("paymentDate=" + paymentDate);
+            if (invoiceDate) paramsList.push("invoiceDate=" + invoiceDate);
+            if (installmentNumber) paramsList.push("installmentNumber=" + installmentNumber);
+        } else {
+            setHasFilter(false)
+        }
+        let paramsPayments = `?`; // Spring usa paginação começando em 0
+        for (const paramItem of paramsList) {
+            paramsPayments += paramItem + "&"
+        }
+
+        try {
+            const {data}: AxiosResponse<PageableResponse<InstallmentResponseType>> = await ApiConnection(window.location.href).get(`/installments${paramsPayments}`, {
+                timeout: 5 * 60 * 1000
+            })
+            paymentsData = data.content;
+            setTotalPages(data?.totalPages);
+            setTotalElements(data?.totalElements);
+            setPageSize(data?.size)
+        } catch (error) {
+            paymentsData = [];
+            setTotalPages(0);
+            showToastMessage({
+                type: "error",
+                message: "Erro ao tentar obter a lista de boletos: " + error,
+            })
+        }
+        return paymentsData;
+    }
 
     async function handleDeleteInstallment(id: number | string) {
         if (!id) {
@@ -274,26 +279,52 @@ export default function Payments() {
         }
     }
 
-    const [isClient, setIsClient] = useState(false);
-    const isMobile = useMediaQuery({maxWidth: 768});
+    const handleCleanValues = () =>{
+        setAmount("");
+        setStatus("");
+        setInvoiceDate("");
+        setInstallmentNumber("");
+        setPaymentDate("");
+        fetchPayments(false).then(setPayments)
+    }
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const updateSinglePayment = (updateInstallment: InstallmentResponseType) => {
+        setPayments((prev) => prev.map((row) => row.id === updateInstallment?.id ? updateInstallment : row))
+    }
+
+
     return (
         <PrivateRoute>
             <Layout>
 
-                {user?.roles?.includes("ROLE_ADMIN") &&
+                <div className={"flex items-center justify-end gap-2"}>
+                    {user?.roles?.includes("ROLE_ADMIN") &&
 
-                    <ActionsDropdown
-                        length={payments?.length}
-                        handleDeleteAll={handleDeleteAll}
-                        reload={() => {
-                            fetchPayments(false).then(setPayments)
-                        }}
+                        <ActionsDropdown
+                            length={payments?.length}
+                            handleDeleteAll={handleDeleteAll}
+                            reload={() => {
+                                fetchPayments(false).then(setPayments)
+                            }}
+                        />
+                    }
+                    <FiltersDropdown
+                        status={status}
+                        amount={ amount }
+                        isMobile={ isMobile }
+                        setStatus={setStatus}
+                        setAmount={ setAmount }
+                        paymentDate={paymentDate}
+                        invoiceDate={invoiceDate}
+                        setPaymentDate={setPaymentDate}
+                        setInvoiceDate={setInvoiceDate}
+                        installmentId={ installmentNumber }
+                        setInstallmentId={ setInstallmentNumber }
+                        apply={() => {fetchPayments(true).then(setPayments)}}
+                        cleanFilter={handleCleanValues}
                     />
-                }
+                </div>
+
 
                 {!isClient ? null : isMobile ? (
                     <div className={"max-h-[55vh] overflow-auto"}>

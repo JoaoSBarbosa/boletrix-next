@@ -66,3 +66,15 @@ export const DropdownItemButton = ({children,label, onClick,...rest}:DropdownIte
         </button>
     )
 }
+
+interface ActionsDropdownItemProps {
+    children: ReactNode
+}
+
+export const ActionsDropdownItem = ({children}: ActionsDropdownItemProps) => {
+    return (
+        <div onClick={(e) => e.stopPropagation()}>
+            {children}
+        </div>
+    )
+}

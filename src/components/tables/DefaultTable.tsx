@@ -206,7 +206,7 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                         <InputText
                             isDark={ true }
                             title={"Nº"}
-                            value={item?.installment_number}
+                            value={item?.installmentNumber}
                             width={"50%"}
                         >
                             <NumberOneIcon/>
@@ -255,7 +255,7 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                         <InputText
                             title={"Comprovante"}
                             isDark={ true }
-                            value={item?.receipt_url ? item.receipt_url : "-"}
+                            value={item?.receiptUrl ? item.receiptUrl : "-"}
                             width={"100%"}
                         >
                             <ReceiptIcon/>
