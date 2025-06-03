@@ -55,7 +55,11 @@ export const GeneratedPaymentsDialog = ({
             return;
         }
         try {
-            await ApiConnection(window.location.href).post(`/installments/generated/${totalAmount}/${monthlyAmount}?initialDate=${initialDate}`);
+            await ApiConnection(window.location.href).post(`/debts`,{
+                totalAmount,
+                monthlyAmount,
+                initialDate
+            });
 
             showToastMessage({
                 type: "success",

@@ -25,6 +25,12 @@ const config: Config = {
         secondaryColor: "#E5B96C",
         tertiaryColor: '#B8860B',
         quaternaryColor: '#8B6508',
+      },
+      borderColor:{
+        primary: '#00384D',
+        secondary: "#E5B96C",
+        tertiary: '#B8860B',
+        quaternary: '#8B6508',
       }
     },
   },

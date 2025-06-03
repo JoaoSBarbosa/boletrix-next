@@ -8,7 +8,7 @@ import {Settings2} from "lucide-react";
 import {ReactNode} from "react";
 
 interface ActionsDropdownProps {
-    length?: number;
+    length: number;
     handleDeleteAll: () => void;
     reload: () => void;
 }
@@ -24,20 +24,21 @@ export const ActionsDropdown = ({length, handleDeleteAll, reload}: ActionsDropdo
             sideOffset={1}
         >
             <div className="flex flex-col gap-2 w-64">
-                {length && length > 0 && (
+                {length > 0 && (
                     <ActionsDropdownItem>
                         <Alert
                             titleAlert="Confirmação de Exclusão"
                             descriptionAlert="Atenção! Esta ação é irreversível. Deseja mesmo apagar os registros?"
                             button={
                                 <DropdownItemButton label={"Deletar todos"}>
-                                    <TrashIcon/>
+                                    <TrashIcon />
                                 </DropdownItemButton>
                             }
                             onAccept={handleDeleteAll}
                         />
                     </ActionsDropdownItem>
                 )}
+
 
                 <ActionsDropdownItem>
                     <GeneratedPaymentsDialog reload={reload} buttonType={ButtonTypeEnum.DROPDOWN}/>

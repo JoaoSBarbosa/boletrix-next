@@ -24,6 +24,7 @@ import {PrivateRoute} from "@/components/security/PrivateRoute";
 import {useRouter} from "next/router";
 import {ActionsDropdown} from "@/components/pages/payments/components/actionsDropdown";
 import {FiltersDropdown, status} from "@/components/pages/payments/components/filters";
+import {DebtCard} from "@/components/pages/debt/components";
 
 export default function Payments() {
 
@@ -47,6 +48,8 @@ export default function Payments() {
     const toastShown = useRef(false);
     const [isClient, setIsClient] = useState(false);
     const isMobile = useMediaQuery({maxWidth: 768});
+
+    const debtCardRef = useRef<{ reloadDebt: () => void}>( null );
 
     useEffect(() => {
         if (isAuthLoading) return; // Aguarda o carregamento da autenticação
@@ -90,6 +93,7 @@ export default function Payments() {
     }, [user, requestPage])
 
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
+
     const clientsTableColumns = [
         {
             id: 'installmentNumber',
@@ -147,8 +151,7 @@ export default function Payments() {
             name: "Editar",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row}
-                                                                           reload={updateSinglePayment}/>
+            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row} reload={updateSinglePayment}/>
         },
         {
             id: 'receipt_url',
@@ -248,6 +251,7 @@ export default function Payments() {
         }
         try {
             await ApiConnection(window.location.href).delete(`/installments/${id}`);
+            debtCardRef.current?.reloadDebt();
             showToastMessage({
                 type: "success",
                 message: "Parcela deletada com sucesso!"
@@ -279,6 +283,7 @@ export default function Payments() {
         }
     }
 
+
     const handleCleanValues = () =>{
         setAmount("");
         setStatus("");
@@ -289,7 +294,8 @@ export default function Payments() {
     }
 
     const updateSinglePayment = (updateInstallment: InstallmentResponseType) => {
-        setPayments((prev) => prev.map((row) => row.id === updateInstallment?.id ? updateInstallment : row))
+        setPayments((prev) => prev.map((row) => row.id === updateInstallment?.id ? updateInstallment : row));
+        debtCardRef.current?.reloadDebt(); // 👈 atualiza os dados da dívida!
     }
 
 
@@ -297,32 +303,39 @@ export default function Payments() {
         <PrivateRoute>
             <Layout>
 
-                <div className={"flex items-center justify-end gap-2"}>
-                    {user?.roles?.includes("ROLE_ADMIN") &&
+                <div className={"flex items-center justify-between mb-2"}>
 
-                        <ActionsDropdown
-                            length={payments?.length}
-                            handleDeleteAll={handleDeleteAll}
-                            reload={() => {
-                                fetchPayments(false).then(setPayments)
-                            }}
-                        />
-                    }
-                    <FiltersDropdown
-                        status={status}
-                        amount={ amount }
-                        isMobile={ isMobile }
-                        setStatus={setStatus}
-                        setAmount={ setAmount }
-                        paymentDate={paymentDate}
-                        invoiceDate={invoiceDate}
-                        setPaymentDate={setPaymentDate}
-                        setInvoiceDate={setInvoiceDate}
-                        installmentId={ installmentNumber }
-                        setInstallmentId={ setInstallmentNumber }
-                        apply={() => {fetchPayments(true).then(setPayments)}}
-                        cleanFilter={handleCleanValues}
-                    />
+                    <div>
+                        <DebtCard ref={ debtCardRef }/>
+                    </div>
+                 <div className={"flex items-center gap-2"}>
+                     {user?.roles?.includes("ROLE_ADMIN") &&
+
+                         <ActionsDropdown
+                             length={payments?.length}
+                             handleDeleteAll={handleDeleteAll}
+                             reload={() => {
+                                 fetchPayments(false).then(setPayments)
+                             }}
+                         />
+                     }
+                     <FiltersDropdown
+                         status={status}
+                         amount={ amount }
+                         isMobile={ isMobile }
+                         setStatus={setStatus}
+                         setAmount={ setAmount }
+                         paymentDate={paymentDate}
+                         invoiceDate={invoiceDate}
+                         setPaymentDate={setPaymentDate}
+                         setInvoiceDate={setInvoiceDate}
+                         installmentId={ installmentNumber }
+                         setInstallmentId={ setInstallmentNumber }
+                         apply={() => {fetchPayments(true).then(setPayments)}}
+                         cleanFilter={handleCleanValues}
+                     />
+                 </div>
+
                 </div>
 
 
