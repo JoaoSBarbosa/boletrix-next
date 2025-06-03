@@ -4,6 +4,7 @@ import {FaFilter} from "react-icons/fa";
 import * as Form from "../../../../Forms";
 import {CurrencyInputText, InputText} from "@/components/inputs/InputText";
 import {CheckBox} from "@/components/checkbox";
+import {CurrencyCircleDollarIcon, FilesIcon, FunnelIcon} from "@phosphor-icons/react";
 
 export type status = "PENDING" | "PAID" | "";
 
@@ -57,8 +58,8 @@ export const FiltersDropdown = ({
         <DropdownMenuCustom
             width={isMobile ? 300 : 500}
             trigger={
-                <ButtonRef width="max-content" value="Filtros" type={ButtonType.BUTTON} bgColor={BgColor.SECONDARY}>
-                    <FaFilter size={18}/>
+                <ButtonRef width="max-content" value="" type={ButtonType.BUTTON} bgColor={BgColor.PRIMARY_SYSTEM}>
+                    <FunnelIcon size={24} weight={"fill"} />
                 </ButtonRef>
             }
             sideOffset={1}
@@ -72,13 +73,17 @@ export const FiltersDropdown = ({
                         width={"40%"}
                         value={installmentId}
                         onChange={(value) => setInstallmentId(value.target.value)}
-                    />
+                    >
+                        <FilesIcon/>
+                    </InputText>
                     <CurrencyInputText
                         title={"Valor"}
                         width={"60%"}
                         value={amount}
                         onValueChange={(value) => setAmount(value || "")}
-                    />
+                    >
+                        <CurrencyCircleDollarIcon/>
+                    </CurrencyInputText>
                 </Form.FormRows>
                 <Form.FormRows justifyContent={"flex-start"}>
                     <InputText

@@ -10,7 +10,7 @@ import {MdPayments} from "react-icons/md";
 import {NotePencilIcon} from "@phosphor-icons/react";
 import {useWindowSize} from "@/hooks/useWindowSize";
 import {Selection, SelectionOptionsProps} from "@/components/select";
-import {showToastMessage} from "@/util/util";
+import {showToastMessage, typeStatus} from "@/util/util";
 import ApiConnection from "@/util/api";
 import {AxiosResponse} from "axios";
 import {Loading} from "@/components/Loadings";
@@ -50,10 +50,7 @@ export const EditInstallmentDialog = ({installment, iconSize = 24, reload}: Edit
         }
     }, [showModal]);
 
-    const typeStatus: SelectionOptionsProps[] = [
-        {value: 'PENDING', label: "Pendente"},
-        {value: 'PAID', label: "Pago"},
-    ]
+
 
     async function handleUpdateRegister() {
         if (status === 'PAID' && (!paymentDate) ||

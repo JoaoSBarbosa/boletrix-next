@@ -2,13 +2,11 @@ import {useAuth} from "@/hooks/useAuth";
 import {Layout} from "@/components/layout";
 import {useEffect, useRef, useState} from "react";
 import {useMediaQuery} from "react-responsive";
-
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import ApiConnection from "@/util/api";
 import {AxiosResponse} from "axios";
 import {PageableResponse} from "@/types/PageableResponse";
-import {BgColor, Button, ButtonType, TableSpanButton, ThemeSpan,} from "@/components/buttons";
-import {GeneratedPaymentsDialog} from "@/components/pages/payments/dialogs/GeneratedPaymentsDialog";
+import {TableSpanButton, ThemeSpan,} from "@/components/buttons";
 import {
     AlignmentColumnTableProps,
     ColumnTableProps,
@@ -18,21 +16,23 @@ import {
 import {Alert} from "@/components/alert";
 import {IoBackspace} from "react-icons/io5";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
-import {cardStatus, formatedDate, showToastMessage} from "@/util/util";
+import {CardStatus, formatedDate, showToastMessage} from "@/util/util";
 import {PageableFooter} from "@/components/pageable";
 import {PrivateRoute} from "@/components/security/PrivateRoute";
 import {useRouter} from "next/router";
 import {ActionsDropdown} from "@/components/pages/payments/components/actionsDropdown";
 import {FiltersDropdown, status} from "@/components/pages/payments/components/filters";
 import {DebtCard} from "@/components/pages/debt/components";
+import {InstallmentStatus} from "@/components/pages/payments/dialogs/InstallmentStatus";
+import {useWindowSize} from "@/hooks/useWindowSize";
 
 export default function Payments() {
 
-    const PAGE_SIZE = 10;
     const ITEMS_PER_PAGE = '10';
-    const {user, isAdmin, setIsAuthLoading, isAuthLoading} = useAuth();
+    const {user, isAuthLoading} = useAuth();
     const router = useRouter();
-
+    const {width} = useWindowSize();
+    const isSmallScreen = width <= 640;
     const [status, setStatus] = useState<status>("");
     const [invoiceDate, setInvoiceDate] = useState("");
     const [installmentNumber, setInstallmentNumber] = useState("");
@@ -45,11 +45,10 @@ export default function Payments() {
     const [requestPage, setRequestPage] = useState<number>(1);
     const [payments, setPayments] = useState<InstallmentResponseType[]>([]);
     const [totalElements, setTotalElements] = useState<number>(0);
-    const toastShown = useRef(false);
     const [isClient, setIsClient] = useState(false);
     const isMobile = useMediaQuery({maxWidth: 768});
 
-    const debtCardRef = useRef<{ reloadDebt: () => void}>( null );
+    const debtCardRef = useRef<{ reloadDebt: () => void }>(null);
 
     useEffect(() => {
         if (isAuthLoading) return; // Aguarda o carregamento da autenticação
@@ -58,7 +57,7 @@ export default function Payments() {
                 type: "info",
                 message: "Você precisa estar logado para acessar esta página. Faça login para continuar."
             });
-            router.replace("/").then(r => {
+            router.replace("/").then(() => {
                 showToastMessage({
                     type: "success",
                     message: "Redirecionando para a tela de login."
@@ -124,7 +123,8 @@ export default function Payments() {
             name: 'Status do Pagamento',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
-            cell: (row: InstallmentResponseType) => cardStatus(row?.status)
+            // cell: (row: InstallmentResponseType) => CardStatus(row?.status)
+            cell: (row: InstallmentResponseType) => <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={ isSmallScreen }/>
 
         },
 
@@ -151,7 +151,7 @@ export default function Payments() {
             name: "Editar",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row} reload={updateSinglePayment}/>
+            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row} reload={reloadList}/>
         },
         {
             id: 'receipt_url',
@@ -284,7 +284,7 @@ export default function Payments() {
     }
 
 
-    const handleCleanValues = () =>{
+    const handleCleanValues = () => {
         setAmount("");
         setStatus("");
         setInvoiceDate("");
@@ -293,48 +293,56 @@ export default function Payments() {
         fetchPayments(false).then(setPayments)
     }
 
-    const updateSinglePayment = (updateInstallment: InstallmentResponseType) => {
+    const reloadList = (updateInstallment: InstallmentResponseType) => {
         setPayments((prev) => prev.map((row) => row.id === updateInstallment?.id ? updateInstallment : row));
         debtCardRef.current?.reloadDebt(); // 👈 atualiza os dados da dívida!
     }
+    // const reloadList = async () => {
+    //     await fetchPayments(false).then(setPayments)
+    //     debtCardRef.current?.reloadDebt();
+    // };
 
-
+    useEffect(() => {
+        console.log("ATUALIZOU PARCELAS: ", payments)
+    }, [ payments ]);
     return (
         <PrivateRoute>
             <Layout>
 
-                <div className={"flex items-center justify-between mb-2"}>
+                <div className={`flex items-center ${isSmallScreen ? "gap-2" : "justify-between"} mb-2`}>
 
                     <div>
-                        <DebtCard ref={ debtCardRef }/>
+                        <DebtCard ref={debtCardRef} />
                     </div>
-                 <div className={"flex items-center gap-2"}>
-                     {user?.roles?.includes("ROLE_ADMIN") &&
+                    <div className={"flex items-center gap-2"}>
+                        {user?.roles?.includes("ROLE_ADMIN") &&
 
-                         <ActionsDropdown
-                             length={payments?.length}
-                             handleDeleteAll={handleDeleteAll}
-                             reload={() => {
-                                 fetchPayments(false).then(setPayments)
-                             }}
-                         />
-                     }
-                     <FiltersDropdown
-                         status={status}
-                         amount={ amount }
-                         isMobile={ isMobile }
-                         setStatus={setStatus}
-                         setAmount={ setAmount }
-                         paymentDate={paymentDate}
-                         invoiceDate={invoiceDate}
-                         setPaymentDate={setPaymentDate}
-                         setInvoiceDate={setInvoiceDate}
-                         installmentId={ installmentNumber }
-                         setInstallmentId={ setInstallmentNumber }
-                         apply={() => {fetchPayments(true).then(setPayments)}}
-                         cleanFilter={handleCleanValues}
-                     />
-                 </div>
+                            <ActionsDropdown
+                                length={payments?.length}
+                                handleDeleteAll={handleDeleteAll}
+                                reload={() => {
+                                    fetchPayments(false).then(setPayments)
+                                }}
+                            />
+                        }
+                        <FiltersDropdown
+                            status={status}
+                            amount={amount}
+                            isMobile={isMobile}
+                            setStatus={setStatus}
+                            setAmount={setAmount}
+                            paymentDate={paymentDate}
+                            invoiceDate={invoiceDate}
+                            setPaymentDate={setPaymentDate}
+                            setInvoiceDate={setInvoiceDate}
+                            installmentId={installmentNumber}
+                            setInstallmentId={setInstallmentNumber}
+                            apply={() => {
+                                fetchPayments(true).then(setPayments)
+                            }}
+                            cleanFilter={handleCleanValues}
+                        />
+                    </div>
 
                 </div>
 

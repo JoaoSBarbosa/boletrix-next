@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styles from "./Table.module.css";
-import styles2 from "./MobileInstallmentTable.module.css";
-import {cardStatus, formatedDate, recalculateHeightComponent} from "@/util/util";
+import {formatedDate, recalculateHeightComponent} from "@/util/util";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
 import {Alert} from "@/components/alert";
 import {TableSpanButton, ThemeSpan} from "@/components/buttons";
@@ -9,7 +8,7 @@ import {IoBackspace} from "react-icons/io5";
 import {InstallmentResponseType, StatusType} from "@/types/InstallmentResponseType";
 import * as Form from "../Forms";
 import {CurrencyInputText, InputText} from "../inputs/InputText";
-import {CalendarIcon, MoneyIcon, NumberOneIcon, ReceiptIcon} from "@phosphor-icons/react";
+import {CalendarIcon, ChartLineIcon, FilesIcon, MoneyIcon, NumberOneIcon, ReceiptIcon} from "@phosphor-icons/react";
 
 export enum AlignmentColumnTableProps {
     CENTRALIZADO = 'center',
@@ -209,7 +208,7 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                             value={item?.installmentNumber}
                             width={"50%"}
                         >
-                            <NumberOneIcon/>
+                            <FilesIcon/>
                         </InputText>
                         <CurrencyInputText
                             title={"Valor"}
@@ -227,14 +226,14 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                             value={handleShowStatus(item?.status)}
                             width={"100%"}
                         >
-                            <NumberOneIcon/>
+                            <ChartLineIcon/>
                         </InputText>
                     </Form.FormRows>
 
                     <Form.FormRows justifyContent={"flex-start"}>
                         <InputText
                             title={"Parcela"}
-                            value={item?.installment_date ? formatedDate(item.installment_date) : "-"}
+                            value={item?.installmentDate ? formatedDate(item.installmentDate) : "-"}
                             width={"50%"}
                             isDark={ true }
                         >
@@ -243,7 +242,7 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
 
                         <InputText
                             title={"Pagamento"}
-                            value={item?.payment_date ? formatedDate(item.payment_date) : "-"}
+                            value={item?.paymentDate ? formatedDate(item.paymentDate) : "-"}
                             width={"50%"}
                             isDark={ true }
                         >

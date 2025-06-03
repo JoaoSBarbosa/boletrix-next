@@ -1,5 +1,5 @@
 import DropdownMenuCustom, {ActionsDropdownItem, DropdownItemButton} from "@/components/dropdown";
-import {TrashIcon} from "@phosphor-icons/react";
+import {GearSixIcon, TrashIcon} from "@phosphor-icons/react";
 import {BgColor, ButtonRef, ButtonType} from "@/components/buttons";
 import {ButtonTypeEnum, GeneratedPaymentsDialog} from "@/components/pages/payments/dialogs/GeneratedPaymentsDialog";
 import {Alert} from "@/components/alert";
@@ -17,8 +17,8 @@ export const ActionsDropdown = ({length, handleDeleteAll, reload}: ActionsDropdo
     return (
         <DropdownMenuCustom
             trigger={
-                <ButtonRef width="max-content" value="Ações" type={ButtonType.BUTTON} bgColor={BgColor.SECONDARY}>
-                    <Settings2 size={18}/>
+                <ButtonRef width="max-content" value="" type={ButtonType.BUTTON} bgColor={BgColor.PRIMARY_SYSTEM}>
+                    <GearSixIcon size={24} weight={"fill"}/>
                 </ButtonRef>
             }
             sideOffset={1}

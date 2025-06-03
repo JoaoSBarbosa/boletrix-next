@@ -8,6 +8,17 @@ export enum BackgroudColor {
     DARK = "bg-gray-900",
     DARK_GRAY = "bg-gray-800",
     WHITE = "bg-white",
+    LIGHT_GRAY = "bg-gray-100",
+    GRAY = "bg-gray-700",
+
+    SOFT_BLUE = "bg-blue-50",
+    SOFT_SLATE = "bg-slate-100",
+    SOFT_ZINC = "bg-zinc-100",
+    WARM_GRAY = "bg-warmGray-100",
+    COOL_GRAY = "bg-coolGray-100",
+    NEUTRAL = "bg-neutral-100",
+    STONE = "bg-stone-100",
+    LIGHT = "bg-gray-50",
 }
 
 interface DropdownMenuCustomProps {
@@ -37,7 +48,7 @@ const DropdownMenuCustom: React.FC<DropdownMenuCustomProps> = ({
                     style={{
                         width: width
                     }}
-                    className={`shadow-2xl ${bgColor} z-50 p-3 mx-2 rounded-md`}
+                    className={`shadow-2xl ${bgColor} z-50 p-3 mx-2 rounded-md border border-gray-300`}
                     sideOffset={sideOffset}
                 >
                     {children}

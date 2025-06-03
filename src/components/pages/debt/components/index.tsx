@@ -1,13 +1,18 @@
-import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import ApiConnection from "@/util/api";
-import { showToastMessage } from "@/util/util";
-import { DebtType } from "@/types/debt/DebtType";
+import {showToastMessage} from "@/util/util";
+import {DebtType} from "@/types/debt/DebtType";
+import {useWindowSize} from "@/hooks/useWindowSize";
+import DropdownMenuCustom, {ActionsDropdownItem, BackgroudColor} from "@/components/dropdown";
+import {BgColor, ButtonRef, ButtonType} from "@/components/buttons";
+import {CurrencyCircleDollarIcon} from "@phosphor-icons/react";
 
 // 👇 Use forwardRef para expor métodos
 export const DebtCard = forwardRef((_, ref) => {
     const [isLoading, setIsLoading] = useState(false);
     const [debt, setDebt] = useState<DebtType | null>(null);
-
+    const {width} = useWindowSize();
+    const isSmallScreen = width <= 640;
     const fetchDebt = async () => {
         setIsLoading(true);
         try {
@@ -31,6 +36,43 @@ export const DebtCard = forwardRef((_, ref) => {
     useEffect(() => {
         fetchDebt();
     }, []);
+
+    if (isSmallScreen) {
+        return (
+            <DropdownMenuCustom
+                trigger={
+                    <ButtonRef width="max-content" value="" type={ButtonType.BUTTON} bgColor={BgColor.PRIMARY_SYSTEM}>
+                        <CurrencyCircleDollarIcon size={24} weight={"fill"}/>
+                    </ButtonRef>
+                }
+                sideOffset={1}
+            >
+                <div className="flex flex-col gap-2 w-64">
+                    <ActionsDropdownItem>
+                        <StatCard
+                            title="Valor Total"
+                            value={debt?.totalAmount ?? 0.0}
+                            color="text-primaryColor"
+                        />
+                    </ActionsDropdownItem>
+                    <ActionsDropdownItem>
+                        <StatCard
+                            title="Valor Pago"
+                            value={debt?.totalPaid ?? 0.0}
+                            color="text-green-600"
+                        /> </ActionsDropdownItem>
+
+                    <ActionsDropdownItem>
+                        <StatCard
+                            title="Valor Restante"
+                            value={debt?.remainingAmount ?? 0.0}
+                            color="text-red-600"
+                        />
+                    </ActionsDropdownItem>
+                </div>
+            </DropdownMenuCustom>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
@@ -61,12 +103,13 @@ interface StatCardProps {
     color?: string;
 }
 
-const StatCard = ({ title, value, color = "text-primaryColor" }: StatCardProps) => {
+const StatCard = ({title, value, color = "text-primaryColor"}: StatCardProps) => {
     return (
-        <div className="bg-white shadow-sm rounded-xl p-2 flex flex-col items-start justify-center border border-gray-200 hover:shadow-md transition-shadow">
+        <div
+            className="bg-white shadow-sm rounded-xl p-2 flex flex-col items-start justify-center border border-gray-200 hover:shadow-md transition-shadow">
             <span className={`text-[12px] font-semibold`}>{title}</span>
             <span className={` ${color} font-bold text-lg`}>
-                R$ {value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                R$ {value.toLocaleString("pt-BR", {minimumFractionDigits: 2})}
             </span>
         </div>
     );
