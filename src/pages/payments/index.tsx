@@ -25,6 +25,8 @@ import {FiltersDropdown, status} from "@/components/pages/payments/components/fi
 import {DebtCard} from "@/components/pages/debt/components";
 import {InstallmentStatus} from "@/components/pages/payments/dialogs/InstallmentStatus";
 import {useWindowSize} from "@/hooks/useWindowSize";
+import {DownloadSimpleIcon} from "@phosphor-icons/react";
+import {DownloadingOrDeletingBox, Loading} from "@/components/Loadings";
 
 export default function Payments() {
 
@@ -47,7 +49,8 @@ export default function Payments() {
     const [totalElements, setTotalElements] = useState<number>(0);
     const [isClient, setIsClient] = useState(false);
     const isMobile = useMediaQuery({maxWidth: 768});
-
+    const [showLoading, setShowLoading] = useState(false)
+    const [showDownland, setShowDownland] = useState(false)
     const debtCardRef = useRef<{ reloadDebt: () => void }>(null);
 
     useEffect(() => {
@@ -124,7 +127,8 @@ export default function Payments() {
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
             // cell: (row: InstallmentResponseType) => CardStatus(row?.status)
-            cell: (row: InstallmentResponseType) => <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={ isSmallScreen }/>
+            cell: (row: InstallmentResponseType) => <InstallmentStatus installment={row} reloadData={reloadList}
+                                                                       isSmallScreen={isSmallScreen}/>
 
         },
 
@@ -143,7 +147,12 @@ export default function Payments() {
             name: "Comprovante",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            cell: (row: InstallmentResponseType) => row?.receiptUrl ? row.receiptUrl : "-"
+            // cell: (row: InstallmentResponseType) => row?.receiptUrl ? row.receiptUrl : "-"
+            cell: (row: InstallmentResponseType) => row?.receiptPath ?
+                <DownloadSimpleIcon size={32} className={"cursor-pointer"}
+                                    onClick={() => handleDownloadAnnexes(row)}/> : ""
+
+
         },
         {
             id: 'receiptUrl',
@@ -184,6 +193,53 @@ export default function Payments() {
         },
     ] as ColumnTableProps[];
 
+
+    async function handleDownloadAnnexes(row: InstallmentResponseType) {
+        if (!row?.id) {
+            showToastMessage({
+                type: "warning",
+                message: "Downlaod de arquivos - Falha ao tentar baixar o arquivo devido o ID do comprovante do pagamento esta vazio no momento"
+            })
+            return;
+        }
+        try {
+            setShowDownland(true);
+            const response = await ApiConnection(window.location.href).get(`/dropbox/download?id=${row?.id}`,
+                {
+                    responseType: 'blob'
+                });
+
+            if (response.status === 200) {
+                const blob = response.data;
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = row?.receiptPath.split('/').pop() ?? 'file.ext';
+                document.body.appendChild(a); // Adiciona o link ao documento
+                a.click(); // Simule um clique no link
+                document.body.removeChild(a); // Remove o link do documento
+                window.URL.revokeObjectURL(url);
+                // setTableKey((prevKey) => prevKey + 1);
+                showToastMessage({
+                    type: "success",
+                    message: `Download do arquivo '${row?.receiptPath.split("/").pop()}' concluído com sucesso!`
+                });
+            } else {
+                showToastMessage({
+                    type: "error",
+                    message: `Ocorreu um erro ao baixar o arquivo ${row?.receiptPath.split("/").pop()}. Por favor, verifique a conexão com o Dropbox e tente novamente mais tarde.`
+                });
+            }
+        } catch (error) {
+            showToastMessage({
+                type: "error",
+                message: "Erro ao tentar baixar o comprovante"
+            });
+        }
+        setShowDownland(false);
+
+    }
+
     const displayDateTime = (date: string, time: string) => {
 
         const formattedDate = formatedDate(date);
@@ -222,6 +278,7 @@ export default function Payments() {
             paramsPayments += paramItem + "&"
         }
 
+        setShowLoading(true);
         try {
             const {data}: AxiosResponse<PageableResponse<InstallmentResponseType>> = await ApiConnection(window.location.href).get(`/installments${paramsPayments}`, {
                 timeout: 5 * 60 * 1000
@@ -237,6 +294,8 @@ export default function Payments() {
                 type: "error",
                 message: "Erro ao tentar obter a lista de boletos: " + error,
             })
+        } finally {
+            setShowLoading(false);
         }
         return paymentsData;
     }
@@ -304,73 +363,83 @@ export default function Payments() {
 
     useEffect(() => {
         console.log("ATUALIZOU PARCELAS: ", payments)
-    }, [ payments ]);
+    }, [payments]);
     return (
         <PrivateRoute>
             <Layout>
 
-                <div className={`flex items-center ${isSmallScreen ? "gap-2" : "justify-between"} mb-2`}>
+                {showLoading ?
+                    <Loading/>
+                    :
+                    showDownland ?
+                        <DownloadingOrDeletingBox isDelete={false} title={"Baixando comprovante"}/>
+                        :
+                        <>
 
-                    <div>
-                        <DebtCard ref={debtCardRef} />
-                    </div>
-                    <div className={"flex items-center gap-2"}>
-                        {user?.roles?.includes("ROLE_ADMIN") &&
+                            <div className={`flex items-center ${isSmallScreen ? "gap-2" : "justify-between"} mb-2`}>
 
-                            <ActionsDropdown
-                                length={payments?.length}
-                                handleDeleteAll={handleDeleteAll}
-                                reload={() => {
-                                    fetchPayments(false).then(setPayments)
-                                }}
+                                <div>
+                                    <DebtCard ref={debtCardRef}/>
+                                </div>
+                                <div className={"flex items-center gap-2"}>
+                                    {user?.roles?.includes("ROLE_ADMIN") &&
+
+                                        <ActionsDropdown
+                                            length={payments?.length}
+                                            handleDeleteAll={handleDeleteAll}
+                                            reload={() => {
+                                                fetchPayments(false).then(setPayments)
+                                            }}
+                                        />
+                                    }
+                                    <FiltersDropdown
+                                        status={status}
+                                        amount={amount}
+                                        isMobile={isMobile}
+                                        setStatus={setStatus}
+                                        setAmount={setAmount}
+                                        paymentDate={paymentDate}
+                                        invoiceDate={invoiceDate}
+                                        setPaymentDate={setPaymentDate}
+                                        setInvoiceDate={setInvoiceDate}
+                                        installmentId={installmentNumber}
+                                        setInstallmentId={setInstallmentNumber}
+                                        apply={() => {
+                                            fetchPayments(true).then(setPayments)
+                                        }}
+                                        cleanFilter={handleCleanValues}
+                                    />
+                                </div>
+
+                            </div>
+                            {!isClient ? null : isMobile ? (
+                                <div className={"max-h-[55vh] overflow-auto"}>
+                                    {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
+                                    <MobileInstallmentTable
+                                        list={payments}
+                                        onDelete={handleDeleteInstallment}
+                                    />
+                                </div>
+                            ) : (
+                                <DefaultTable
+                                    columns={clientsTableColumns}
+                                    list={payments.length > 0 ? payments : []}
+                                    maxHeight={tableComponentMaxHeight}
+                                />
+                            )}
+                            <PageableFooter
+                                page={requestPage} // Página atual (começando de 1)
+                                itemPerPage={pageSize} // Quantidade de itens por página
+                                totalItems={totalElements} // Total de itens no banco
+                                quantityItemsList={payments.length} // Itens listados atualmente
+                                hasNextPage={requestPage < totalPages} // Se há próxima página
+                                onNextPage={(nextPage) => setRequestPage(nextPage)}
+                                onBackPage={(backPage) => setRequestPage(backPage)}
                             />
-                        }
-                        <FiltersDropdown
-                            status={status}
-                            amount={amount}
-                            isMobile={isMobile}
-                            setStatus={setStatus}
-                            setAmount={setAmount}
-                            paymentDate={paymentDate}
-                            invoiceDate={invoiceDate}
-                            setPaymentDate={setPaymentDate}
-                            setInvoiceDate={setInvoiceDate}
-                            installmentId={installmentNumber}
-                            setInstallmentId={setInstallmentNumber}
-                            apply={() => {
-                                fetchPayments(true).then(setPayments)
-                            }}
-                            cleanFilter={handleCleanValues}
-                        />
-                    </div>
-
-                </div>
+                        </>
 
 
-                {!isClient ? null : isMobile ? (
-                    <div className={"max-h-[55vh] overflow-auto"}>
-                        {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
-                        <MobileInstallmentTable
-                            list={payments}
-                            onDelete={handleDeleteInstallment}
-                        />
-                    </div>
-                ) : (
-                    <DefaultTable
-                        columns={clientsTableColumns}
-                        list={payments.length > 0 ? payments : []}
-                        maxHeight={tableComponentMaxHeight}
-                    />
-                )}
-                <PageableFooter
-                    page={requestPage} // Página atual (começando de 1)
-                    itemPerPage={pageSize} // Quantidade de itens por página
-                    totalItems={totalElements} // Total de itens no banco
-                    quantityItemsList={payments.length} // Itens listados atualmente
-                    hasNextPage={requestPage < totalPages} // Se há próxima página
-                    onNextPage={(nextPage) => setRequestPage(nextPage)}
-                    onBackPage={(backPage) => setRequestPage(backPage)}
-                />
+                }
             </Layout>
         </PrivateRoute>
 

@@ -1,5 +1,5 @@
 import {Modal} from "@/components/modal";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAuth} from "@/hooks/useAuth";
 import {BgColor, Button, ButtonType, TableSpanButton, ThemeSpan} from "@/components/buttons";
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
@@ -26,7 +26,10 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
     const [paymentDate, setPaymentDate] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showLoading, setShowLoading] = useState<boolean>(false);
-
+    const [isSeenDataAndFile, setIsSeenDataAndFile] = useState(false);
+    const [fileName, setFileName] = useState<string>("");
+    const fileInputRef = useRef(null);
+    const [selectedFileEdit, setSelectedFileEdit] = useState<File | null>(null);
     async function handleUpdateStatus() {
 
         if (status === 'PAID' && (!paymentDate || !paymentTime) || !installment?.id) {
@@ -41,12 +44,27 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
             return;
         }
 
-        setShowLoading(true)
+        setShowLoading(true);
+        const formData = new FormData();
+
+        const data = {
+            paymentDate,
+            paymentTime,
+            status
+        }
+
+        formData.append("data", JSON.stringify(data));
+        if ( selectedFileEdit ){
+            setIsSeenDataAndFile(true);
+            formData.append("file", selectedFileEdit);
+        } else {
+            setIsSeenDataAndFile( false )
+        }
         try {
-           const response = await ApiConnection(window.location.href).patch(`/installments/${installment.id}/status`, {
-                paymentDate,
-                paymentTime,
-                status
+           const response = await ApiConnection(window.location.href).patch(`/installments/${installment.id}/status`, formData, {
+               headers: {
+                   'Content-Type': 'multipart/form-data'
+               }
             });
 
             showToastMessage({
@@ -79,6 +97,7 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
             setPaymentTime(installment.paymentTime)
         }
     }, [showModal]);
+
 
     return (
         <Modal
@@ -125,6 +144,31 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
                             value={paymentTime}
                             onChange={(e) => setPaymentTime(e.target.value)}
                         />
+                    </Form.FormRows>
+                    <Form.FormRows justifyContent={"flex-start"}>
+
+                        <div className={"flex flex-col items-start w-full"}>
+                            <label
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="file_input">
+                                <p className="text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+                                    Anexar arquivo <span
+                                    className={`text-red-600`}>{fileName ? `(Substituirá o arquivo atual ${fileName})` : ""}</span>
+                                </p>
+                            </label>
+                            <input
+                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                aria-describedby="file_input_help"
+                                id="file_input"
+                                type="file"
+                                accept={".pdf, .png, .jpg, .jpeg"}
+                                ref={fileInputRef}
+                                onChange={(event) => setSelectedFileEdit(event.target.files ? event.target.files[0] : null)}
+                            />
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
+                                PDF, PNG, JPG ou JPEG.</p>
+                        </div>
+
                     </Form.FormRows>
                     <Form.FormRows justifyContent={"flex-end"}>
                         <Button

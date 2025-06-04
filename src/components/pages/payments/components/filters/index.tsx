@@ -59,7 +59,7 @@ export const FiltersDropdown = ({
             width={isMobile ? 300 : 500}
             trigger={
                 <ButtonRef width="max-content" value="" type={ButtonType.BUTTON} bgColor={BgColor.PRIMARY_SYSTEM}>
-                    <FunnelIcon size={24} weight={"fill"} />
+                    <FunnelIcon size={24} weight={"fill"}/>
                 </ButtonRef>
             }
             sideOffset={1}
@@ -69,9 +69,10 @@ export const FiltersDropdown = ({
                 <Form.FormRows justifyContent={"flex-start"}>
                     <InputText
                         title={"Nº"}
-                        type={"number"}
                         width={"40%"}
+                        justNumber={true}
                         value={installmentId}
+                        placeholder={"Ex.: 1"}
                         onChange={(value) => setInstallmentId(value.target.value)}
                     >
                         <FilesIcon/>
@@ -79,6 +80,7 @@ export const FiltersDropdown = ({
                     <CurrencyInputText
                         title={"Valor"}
                         width={"60%"}
+                        placeholder={"Ex.: R$ 250,00"}
                         value={amount}
                         onValueChange={(value) => setAmount(value || "")}
                     >
@@ -95,10 +97,21 @@ export const FiltersDropdown = ({
                     />
                 </Form.FormRows>
                 <Form.FormRows justifyContent={"flex-start"}>
+                    <h2 className={"text-sm border-b-2 border-secondary text-primaryColor font-bold"}>Data e Hora de Pagamento</h2>
+                </Form.FormRows>
+                <Form.FormRows justifyContent={"flex-start"}>
+
                     <InputText
-                        title={"Data de Pagamento"}
+                        title={"Data"}
                         type={"date"}
-                        width={"100%"}
+                        width={"60%"}
+                        value={paymentDate}
+                        onChange={(value) => setPaymentDate(value.target.value)}
+                    />
+                    <InputText
+                        title={"Hora"}
+                        type={"time"}
+                        width={"40%"}
                         value={paymentDate}
                         onChange={(value) => setPaymentDate(value.target.value)}
                     />
