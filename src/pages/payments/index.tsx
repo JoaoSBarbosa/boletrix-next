@@ -27,6 +27,7 @@ import {InstallmentStatus} from "@/components/pages/payments/dialogs/Installment
 import {useWindowSize} from "@/hooks/useWindowSize";
 import {DownloadSimpleIcon} from "@phosphor-icons/react";
 import {DownloadingOrDeletingBox, Loading} from "@/components/Loadings";
+import {ReceiptActions} from "@/components/pages/payments/dialogs/ReceiptActions";
 
 export default function Payments() {
 
@@ -96,7 +97,7 @@ export default function Payments() {
 
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
 
-    const clientsTableColumns = [
+    const clientsTableColumns: ColumnTableProps[] = [
         {
             id: 'installmentNumber',
             selector: 'installmentNumber',
@@ -117,8 +118,8 @@ export default function Payments() {
             name: 'Data parcela',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
-            cell: (row: InstallmentResponseType) => row?.installmentDate ? formatedDate(row.installmentDate) : "-"
-
+            cell: (row: InstallmentResponseType) =>
+                row?.installmentDate ? formatedDate(row.installmentDate) : "-"
         },
         {
             id: 'status',
@@ -126,20 +127,19 @@ export default function Payments() {
             name: 'Status do Pagamento',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 160,
-            // cell: (row: InstallmentResponseType) => CardStatus(row?.status)
-            cell: (row: InstallmentResponseType) => <InstallmentStatus installment={row} reloadData={reloadList}
-                                                                       isSmallScreen={isSmallScreen}/>
-
+            cell: (row: InstallmentResponseType) =>
+                user?.roles?.includes("ROLE_ADMIN")
+                    ? <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={isSmallScreen} />
+                    : CardStatus(row?.status)
         },
-
         {
             width: 200,
             id: 'paymentDate',
             name: "Data Pagamento",
             selector: 'paymentDate',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            cell: (row: InstallmentResponseType) => row?.paymentDate ? displayDateTime(row.paymentDate, row?.paymentTime) : "-"
-
+            cell: (row: InstallmentResponseType) =>
+                row?.paymentDate ? displayDateTime(row.paymentDate, row?.paymentTime) : "-"
         },
         {
             id: 'receiptUrl',
@@ -147,51 +147,149 @@ export default function Payments() {
             name: "Comprovante",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 200,
-            // cell: (row: InstallmentResponseType) => row?.receiptUrl ? row.receiptUrl : "-"
-            cell: (row: InstallmentResponseType) => row?.receiptPath ?
-                <DownloadSimpleIcon size={32} className={"cursor-pointer"}
-                                    onClick={() => handleDownloadAnnexes(row)}/> : ""
-
-
-        },
-        {
-            id: 'receiptUrl',
-            selector: 'receiptUrl',
-            name: "Editar",
-            alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            width: 200,
-            cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row} reload={reloadList}/>
-        },
-        {
-            id: 'receipt_url',
-            selector: 'receipt_url',
-            name: "Excluir",
-            alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            width: 200,
             cell: (row: InstallmentResponseType) =>
-                <Alert
-
-                    titleAlert={`Confirmação de Exclusão`}
-                    descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""} ' do sistema? ️`}
-                    button={
-
-                        <TableSpanButton
-                            info={"Excluir registro de Cliente"}
-                            width={'max-content'}
-                            notBg={true}
-                            theme={ThemeSpan.RED}
-                        >
-                            <IoBackspace
-                                size={24}
-                                color={'#b91c1c'}
-                                className={"cursor-pointer inline-flex"}/>
-                        </TableSpanButton>
-
-                    }
-                    onAccept={() => handleDeleteInstallment(row?.id)}
-                />
+                row?.receiptPath
+                    ? <ReceiptActions onDownload={() => handleDownloadAnnexes(row)} row={row} />
+                    : ""
         },
-    ] as ColumnTableProps[];
+    ];
+
+// ⬇️ Adiciona colunas extras se for ROLE_ADMIN
+    if (user?.roles?.includes("ROLE_ADMIN")) {
+        clientsTableColumns.push(
+            {
+                id: 'edit',
+                selector: 'edit',
+                name: "Editar",
+                alignment: AlignmentColumnTableProps.CENTRALIZADO,
+                width: 200,
+                cell: (row: InstallmentResponseType) =>
+                    <EditInstallmentDialog installment={row} reload={reloadList} />
+            },
+            {
+                id: 'delete',
+                selector: 'delete',
+                name: "Excluir",
+                alignment: AlignmentColumnTableProps.CENTRALIZADO,
+                width: 200,
+                cell: (row: InstallmentResponseType) =>
+                    <Alert
+                        titleAlert="Confirmação de Exclusão"
+                        descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""}' do sistema?`}
+                        button={
+                            <TableSpanButton
+                                info="Excluir registro de Cliente"
+                                width="max-content"
+                                notBg
+                                theme={ThemeSpan.RED}
+                            >
+                                <IoBackspace size={24} color="#b91c1c" className="cursor-pointer inline-flex" />
+                            </TableSpanButton>
+                        }
+                        onAccept={() => handleDeleteInstallment(row?.id)}
+                    />
+            }
+        );
+    }
+
+
+
+    // const clientsTableColumns = [
+    //     {
+    //         id: 'installmentNumber',
+    //         selector: 'installmentNumber',
+    //         name: "Nº",
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 50
+    //     },
+    //     {
+    //         id: 'amount',
+    //         selector: 'amount',
+    //         name: 'Valor',
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 100
+    //     },
+    //     {
+    //         id: 'installmentDate',
+    //         selector: 'installmentDate',
+    //         name: 'Data parcela',
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 160,
+    //         cell: (row: InstallmentResponseType) => row?.installmentDate ? formatedDate(row.installmentDate) : "-"
+    //
+    //     },
+    //     {
+    //         id: 'status',
+    //         selector: 'status',
+    //         name: 'Status do Pagamento',
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 160,
+    //         // cell: (row: InstallmentResponseType) => CardStatus(row?.status)
+    //         cell: (row: InstallmentResponseType) => user?.roles?.includes("ROLE_ADMIN")
+    //             ? <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={isSmallScreen}/>
+    //             : CardStatus(row?.status)
+    //     },
+    //
+    //     {
+    //         width: 200,
+    //         id: 'paymentDate',
+    //         name: "Data Pagamento",
+    //         selector: 'paymentDate',
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         cell: (row: InstallmentResponseType) => row?.paymentDate ? displayDateTime(row.paymentDate, row?.paymentTime) : "-"
+    //
+    //     },
+    //     {
+    //         id: 'receiptUrl',
+    //         selector: 'receiptUrl',
+    //         name: "Comprovante",
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 200,
+    //         // cell: (row: InstallmentResponseType) => row?.receiptUrl ? row.receiptUrl : "-"
+    //         cell: (row: InstallmentResponseType) => row?.receiptPath ?
+    //             <DownloadSimpleIcon size={32} className={"cursor-pointer"}
+    //                                 onClick={() => handleDownloadAnnexes(row)}/> : ""
+    //
+    //
+    //     },
+    //     {
+    //         id: 'receiptUrl',
+    //         selector: 'receiptUrl',
+    //         name: "Editar",
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 200,
+    //         cell: (row: InstallmentResponseType) => <EditInstallmentDialog installment={row} reload={reloadList}/>
+    //     },
+    //     {
+    //         id: 'receipt_url',
+    //         selector: 'receipt_url',
+    //         name: "Excluir",
+    //         alignment: AlignmentColumnTableProps.CENTRALIZADO,
+    //         width: 200,
+    //         cell: (row: InstallmentResponseType) =>
+    //             <Alert
+    //
+    //                 titleAlert={`Confirmação de Exclusão`}
+    //                 descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""} ' do sistema? ️`}
+    //                 button={
+    //
+    //                     <TableSpanButton
+    //                         info={"Excluir registro de Cliente"}
+    //                         width={'max-content'}
+    //                         notBg={true}
+    //                         theme={ThemeSpan.RED}
+    //                     >
+    //                         <IoBackspace
+    //                             size={24}
+    //                             color={'#b91c1c'}
+    //                             className={"cursor-pointer inline-flex"}/>
+    //                     </TableSpanButton>
+    //
+    //                 }
+    //                 onAccept={() => handleDeleteInstallment(row?.id)}
+    //             />
+    //     },
+    // ] as ColumnTableProps[];
 
 
     async function handleDownloadAnnexes(row: InstallmentResponseType) {

@@ -11,6 +11,7 @@ import {Selection} from "@/components/select";
 import {InputText} from "@/components/inputs/InputText";
 import ApiConnection from "@/util/api";
 import {Loading} from "@/components/Loadings";
+import {InputFile} from "@/components/inputs/inputFile";
 
 interface InstallmentStatusProps {
     installment: InstallmentResponseType,
@@ -105,7 +106,7 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
             open={showModal}
             setOpen={setShowModal}
             title={showLoading ? "Carregando..." : "Edição de Parcela"}
-            width={isSmallScreen ? "95%" : 450}
+            width={isSmallScreen ? "95%" : 500}
             trigger={
                 <CardStatusChildren status={installment?.status}>
                     <NotePencilIcon weight={'regular'}/>
@@ -147,27 +148,12 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
                     </Form.FormRows>
                     <Form.FormRows justifyContent={"flex-start"}>
 
-                        <div className={"flex flex-col items-start w-full"}>
-                            <label
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                htmlFor="file_input">
-                                <p className="text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-                                    Anexar arquivo <span
-                                    className={`text-red-600`}>{fileName ? `(Substituirá o arquivo atual ${fileName})` : ""}</span>
-                                </p>
-                            </label>
-                            <input
-                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                aria-describedby="file_input_help"
-                                id="file_input"
-                                type="file"
-                                accept={".pdf, .png, .jpg, .jpeg"}
-                                ref={fileInputRef}
-                                onChange={(event) => setSelectedFileEdit(event.target.files ? event.target.files[0] : null)}
-                            />
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-                                PDF, PNG, JPG ou JPEG.</p>
-                        </div>
+                        <InputFile
+                            fileName={fileName}
+                            onChange={(file) => setSelectedFileEdit(file)}
+                        />
+
+
 
                     </Form.FormRows>
                     <Form.FormRows justifyContent={"flex-end"}>
