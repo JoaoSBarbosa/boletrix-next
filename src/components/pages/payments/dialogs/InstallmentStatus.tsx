@@ -4,7 +4,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {BgColor, Button, ButtonType, TableSpanButton, ThemeSpan} from "@/components/buttons";
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
 import * as Form from "../../../Forms";
-import {NotePencilIcon} from "@phosphor-icons/react";
+import {DownloadSimpleIcon, EyeIcon, NotePencilIcon, TrashIcon} from "@phosphor-icons/react";
 import {useWindowSize} from "@/hooks/useWindowSize";
 import {CardStatus, CardStatusChildren, showToastMessage, typeStatus} from "@/util/util";
 import {Selection} from "@/components/select";
@@ -12,6 +12,7 @@ import {InputText} from "@/components/inputs/InputText";
 import ApiConnection from "@/util/api";
 import {Loading} from "@/components/Loadings";
 import {InputFile} from "@/components/inputs/inputFile";
+import {AxiosResponse} from "axios";
 
 interface InstallmentStatusProps {
     installment: InstallmentResponseType,
@@ -19,7 +20,7 @@ interface InstallmentStatusProps {
     isSmallScreen: boolean;
 }
 
-export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: InstallmentStatusProps) => {
+export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: InstallmentStatusProps) => {
 
 
     const [status, setStatus] = useState<string>("");
@@ -31,6 +32,7 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
     const [fileName, setFileName] = useState<string>("");
     const fileInputRef = useRef(null);
     const [selectedFileEdit, setSelectedFileEdit] = useState<File | null>(null);
+
     async function handleUpdateStatus() {
 
         if (status === 'PAID' && (!paymentDate || !paymentTime) || !installment?.id) {
@@ -55,24 +57,24 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
         }
 
         formData.append("data", JSON.stringify(data));
-        if ( selectedFileEdit ){
+        if (selectedFileEdit) {
             setIsSeenDataAndFile(true);
             formData.append("file", selectedFileEdit);
         } else {
-            setIsSeenDataAndFile( false )
+            setIsSeenDataAndFile(false)
         }
         try {
-           const response = await ApiConnection(window.location.href).patch(`/installments/${installment.id}/status`, formData, {
-               headers: {
-                   'Content-Type': 'multipart/form-data'
-               }
+            const response = await ApiConnection(window.location.href).patch(`/installments/${installment.id}/status`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
             showToastMessage({
                 type: "success",
                 message: "Registro atualizado com sucesso!"
             });
-            if( response?.data && reloadData) reloadData(response.data);
+            if (response?.data && reloadData) reloadData(response.data);
 
             setShowModal(false);
         } catch (error) {
@@ -99,6 +101,31 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
         }
     }, [showModal]);
 
+    async function handleDeleteReceipt() {
+
+        if (!installment.id) {
+            showToastMessage({
+                type: "warning",
+                message: "Não foi encontrado o ID da parcela"
+            })
+            return;
+        }
+        try {
+           const data:AxiosResponse<InstallmentResponseType> = await ApiConnection(window.location.href).delete(`/installments/file/${installment.id}/delete`)
+            showToastMessage({
+                type: "success",
+                message: "Comprovante deletado com sucesso!"
+            })
+            if ( data?.data && reloadData){
+                reloadData( data.data);
+            }
+        } catch (error) {
+            showToastMessage({
+                type: "error",
+                message: "Erro ao tentar excluir comprovante!"
+            })
+        }
+    }
 
     return (
         <Modal
@@ -146,16 +173,76 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen }: Ins
                             onChange={(e) => setPaymentTime(e.target.value)}
                         />
                     </Form.FormRows>
-                    <Form.FormRows justifyContent={"flex-start"}>
+                    {installment?.receiptUrl ?
+                        <div className="flex flex-col gap-2 w-full border-b-2 border-gray-500">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Comprovante de pagamento
+                                </label>
+                                <div
+                                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-md text-sm text-gray-800 dark:text-gray-200 break-all border border-gray-300 dark:border-gray-600">
+                                    {installment?.receiptPath?.split('/').pop() || "Nenhum comprovante encontrado"}
+                                </div>
+                            </div>
 
-                        <InputFile
-                            fileName={fileName}
-                            onChange={(file) => setSelectedFileEdit(file)}
-                        />
+                            <div className="flex gap-4 justify-end">
+                                <a
+                                    href={installment?.receiptUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Visualizar comprovante"
+                                    className="hover:text-blue-600 transition-colors"
+                                >
+                                    <EyeIcon size={28}/>
+                                </a>
+                                <button
+                                    type={"button"}
+                                    onClick={handleDeleteReceipt}
+                                    title="Excluir comprovante"
+                                    className="hover:text-red-600 transition-colors"
+                                >
+                                    <TrashIcon size={28}/>
+                                </button>
+                            </div>
+                        </div>
 
-
-
-                    </Form.FormRows>
+                        // <Form.FormColumns>
+                        //     <Form.FormRows justifyContent={"flex-start"}>
+                        //         <InputText
+                        //             width={'100%'}
+                        //             title={'Comprovante pagamento'}
+                        //             value={installment?.receiptPath?.split('/').pop() || ""}
+                        //         />
+                        //
+                        //     </Form.FormRows>
+                        //     <Form.FormRows justifyContent={"flex-end"}>
+                        //         <a
+                        //             href={installment?.receiptUrl}
+                        //             target="_blank"
+                        //             rel="noopener noreferrer"
+                        //             title="Visualizar comprovante"
+                        //             className="hover:text-blue-600 transition-colors"
+                        //         >
+                        //             <EyeIcon size={28}/>
+                        //         </a>
+                        //         <button
+                        //             onClick={handleDeleteReceipt}
+                        //             title="Excluir comprovante"
+                        //             className="hover:text-green-600 transition-colors"
+                        //         >
+                        //             <TrashIcon size={28}/>
+                        //         </button>
+                        //
+                        //     </Form.FormRows>
+                        // </Form.FormColumns>
+                        :
+                        <Form.FormRows justifyContent={"flex-start"}>
+                            <InputFile
+                                fileName={fileName}
+                                onChange={(file) => setSelectedFileEdit(file)}
+                            />
+                        </Form.FormRows>
+                    }
                     <Form.FormRows justifyContent={"flex-end"}>
                         <Button
                             onClick={handleUpdateStatus}

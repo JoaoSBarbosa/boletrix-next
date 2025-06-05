@@ -1,3 +1,5 @@
+import {DebtType} from "@/types/debt/DebtType";
+
 export type InstallmentResponseType ={
     id: string;
     amount: number;
@@ -8,6 +10,7 @@ export type InstallmentResponseType ={
     receiptPath: string;
     installmentNumber: string;
     status: StatusType;
+    debtDTO: DebtType
 
 }
 
