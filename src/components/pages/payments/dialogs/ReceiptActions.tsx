@@ -52,9 +52,9 @@ export const ReceiptActions = ({ onDisplay, onDownload, row }: ReceiptActionsPro
             <button
                 onClick={onDownload}
                 title="Baixar comprovante"
-                className="hover:text-green-600 transition-colors"
+                className="hover:bg-green-600 transition-colors bg-green-100 p-1 rounded-md"
             >
-                <DownloadSimpleIcon size={28} />
+                <DownloadSimpleIcon size={28} color={"#15803d"} className={"hover:fill-white"}/>
             </button>
 
             {hasReceiptUrl ? (
@@ -63,9 +63,9 @@ export const ReceiptActions = ({ onDisplay, onDownload, row }: ReceiptActionsPro
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Visualizar comprovante"
-                    className="hover:text-blue-600 transition-colors"
+                    className="hover:bg-blue-600 transition-colors bg-blue-100 p-1 rounded-md"
                 >
-                    <EyeIcon size={28} />
+                    <EyeIcon size={28} color={"#60a5fa"} className={"hover:fill-white"}/>
                 </a>
             ) : (
                 <span className="text-sm text-gray-400 italic">Sem link</span>

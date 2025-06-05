@@ -424,6 +424,8 @@ export default function Payments() {
                                         {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
                                         <MobileInstallmentTable
                                             list={payments}
+                                            reloadData={reloadList}
+                                            isSmallScreen={isSmallScreen}
                                             onDelete={handleDeleteInstallment}
                                         />
                                     </div>

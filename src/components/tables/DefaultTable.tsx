@@ -9,6 +9,9 @@ import {InstallmentResponseType, StatusType} from "@/types/InstallmentResponseTy
 import * as Form from "../Forms";
 import {CurrencyInputText, InputText} from "../inputs/InputText";
 import {CalendarIcon, ChartLineIcon, FilesIcon, MoneyIcon, NumberOneIcon, ReceiptIcon} from "@phosphor-icons/react";
+import {useAuth} from "@/hooks/useAuth";
+import {InstallmentStatus} from "@/components/pages/payments/dialogs/InstallmentStatus";
+import {ReceiptActions} from "@/components/pages/payments/dialogs/ReceiptActions";
 
 export enum AlignmentColumnTableProps {
     CENTRALIZADO = 'center',
@@ -178,10 +181,14 @@ interface MobileInstallmentTableProps {
     list: InstallmentResponseType[];
     title?: string;
     onDelete: (id: string | number) => void;
+    isSmallScreen: boolean;
+    reloadData: (data: InstallmentResponseType) => void;
+    onDownload: (data: InstallmentResponseType) => void;
 }
 
-export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmentTableProps) => {
+export const MobileInstallmentTable = ({list, title, onDownload, reloadData, isSmallScreen, onDelete}: MobileInstallmentTableProps) => {
 
+    const { user } = useAuth();
     const handleShowStatus = (status: StatusType) => {
 
         switch (status) {
@@ -220,14 +227,24 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                         </CurrencyInputText>
                     </Form.FormRows>
                     <Form.FormRows justifyContent={"flex-start"}>
-                        <InputText
-                            isDark={ true }
-                            title={"Status do Pagamento"}
-                            value={handleShowStatus(item?.status)}
-                            width={"100%"}
-                        >
-                            <ChartLineIcon/>
-                        </InputText>
+                        { user?.roles?.includes("ROLE_ADMIN") ?
+
+                            <InstallmentStatus
+                                installment={item}
+                                reloadData={reloadData}
+                                isSmallScreen={isSmallScreen}
+                            />
+                        :
+                            <InputText
+                                isDark={ true }
+                                title={"Status do Pagamento"}
+                                value={handleShowStatus(item?.status)}
+                                width={"100%"}
+                            >
+                                <ChartLineIcon/>
+                            </InputText>
+                        }
+
                     </Form.FormRows>
 
                     <Form.FormRows justifyContent={"flex-start"}>
@@ -250,17 +267,27 @@ export const MobileInstallmentTable = ({list, title, onDelete}: MobileInstallmen
                         </InputText>
                     </Form.FormRows>
 
-                    <Form.FormRows justifyContent={"flex-start"}>
-                        <InputText
-                            title={"Comprovante"}
-                            isDark={ true }
-                            value={item?.receiptUrl ? item.receiptUrl : "-"}
-                            width={"100%"}
-                        >
-                            <ReceiptIcon/>
-                        </InputText>
+                    {/*<Form.FormRows justifyContent={"flex-start"}>*/}
+                    {/*        <InputText*/}
+                    {/*            title={"Comprovante"}*/}
+                    {/*            isDark={ true }*/}
+                    {/*            value={item?.receiptUrl ? item.receiptUrl : "-"}*/}
+                    {/*            width={"100%"}*/}
+                    {/*        >*/}
+                    {/*            <ReceiptIcon/>*/}
+                    {/*        </InputText>*/}
+                    {/*    */}
+                    {/*</Form.FormRows>*/}
+                    { item?.receiptPath &&
+                        <Form.FormRows justifyContent={"flex-start"}>
+                            <ReceiptActions
+                                onDownload={() => onDownload(item)}
+                                row={item}
+                            />
+                        </Form.FormRows>
 
-                    </Form.FormRows>
+
+                    }
 
                     <Form.FormRows justifyContent={"flex-start"}>
 

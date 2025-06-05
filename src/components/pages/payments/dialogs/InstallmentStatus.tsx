@@ -10,7 +10,7 @@ import {CardStatus, CardStatusChildren, showToastMessage, typeStatus} from "@/ut
 import {Selection} from "@/components/select";
 import {InputText} from "@/components/inputs/InputText";
 import ApiConnection from "@/util/api";
-import {Loading} from "@/components/Loadings";
+import {DownloadingOrDeletingBox, Loading} from "@/components/Loadings";
 import {InputFile} from "@/components/inputs/inputFile";
 import {AxiosResponse} from "axios";
 
@@ -23,10 +23,12 @@ interface InstallmentStatusProps {
 export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: InstallmentStatusProps) => {
 
 
+    const MESSAGE = 'Por favor, aguarde. Estamos realizando a operação';
     const [status, setStatus] = useState<string>("");
     const [paymentTime, setPaymentTime] = useState<string>("");
     const [paymentDate, setPaymentDate] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
+    const [showDelete, setShowDelete] = useState<boolean>(false);
     const [showLoading, setShowLoading] = useState<boolean>(false);
     const [isSeenDataAndFile, setIsSeenDataAndFile] = useState(false);
     const [fileName, setFileName] = useState<string>("");
@@ -110,6 +112,7 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: Inst
             })
             return;
         }
+        setShowDelete( true );
         try {
            const data:AxiosResponse<InstallmentResponseType> = await ApiConnection(window.location.href).delete(`/installments/file/${installment.id}/delete`)
             showToastMessage({
@@ -124,6 +127,8 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: Inst
                 type: "error",
                 message: "Erro ao tentar excluir comprovante!"
             })
+        } finally {
+            setShowDelete( false );
         }
     }
 
@@ -141,8 +146,9 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: Inst
             }
         >
             {showLoading ?
-                <Loading title={"Atualizando status da parcela"}
-                         message={"Por favor, aguarde. Estamos realizando a operação"}/>
+                <Loading title={"Atualizando status da parcela"} message={MESSAGE}/>
+                :
+                showDelete ? <DownloadingOrDeletingBox isDelete={ true } title={"Deletando comprovante"} message={MESSAGE}/>
                 :
                 <Form.Form flexDirection={"column"}>
                     <Form.FormRows>
