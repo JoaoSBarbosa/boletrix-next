@@ -130,7 +130,8 @@ export default function Payments() {
             width: 160,
             cell: (row: InstallmentResponseType) =>
                 user?.roles?.includes("ROLE_ADMIN")
-                    ? <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={isSmallScreen}/>
+                    ? <InstallmentStatus installment={row} reloadData={reloadList} isSmallScreen={isSmallScreen}
+                                         isMobile={false}/>
                     : CardStatus(row?.status)
         },
         {
@@ -424,6 +425,7 @@ export default function Payments() {
                                         {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
                                         <MobileInstallmentTable
                                             list={payments}
+                                            onDownload={handleDownloadAnnexes}
                                             reloadData={reloadList}
                                             isSmallScreen={isSmallScreen}
                                             onDelete={handleDeleteInstallment}

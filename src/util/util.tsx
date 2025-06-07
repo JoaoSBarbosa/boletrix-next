@@ -2,8 +2,11 @@ import {toast} from "react-toastify";
 import {format, parseISO} from "date-fns";
 import {ptBR} from "date-fns/locale";
 import {StatusType} from "@/types/InstallmentResponseType";
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
 import {SelectionOptionsProps} from "@/components/select";
+import {InputText} from "@/components/inputs/InputText";
+import {ChartLineIcon} from "@phosphor-icons/react";
+import {FaCrown, FaQuestion, FaUser} from "react-icons/fa";
 
 interface ShowToastMessageProps {
     type: 'info' | 'warning' | 'error' | 'success' | 'dark' | 'warn',
@@ -122,26 +125,62 @@ export const CardStatus = (status: StatusType) => {
 
 interface CardStatusChildrenProps {
     status: StatusType;
-    children:ReactNode;
+    children: ReactNode;
     onClick?: (value: any) => void;
+    width?: string | number;
+    isMobile: boolean;
 }
+
 export const CardStatusChildren = (
     {
         status,
         children,
         onClick,
+        width,
+        isMobile,
         ...rest
-    }:CardStatusChildrenProps) =>{
+    }: CardStatusChildrenProps) => {
     if (status === "") return "-";
     const statusLabel = VerifyStatus(status);
     const statusStyle = checkStylesStatus(statusLabel);
+
+    if (isMobile) {
+        return (
+            // <InputText
+            //     isDark={true}
+            //     title="Status"
+            //     value={statusLabel}
+            //     width="50%"
+            //     divColor={ statusStyle }
+            // >
+            //     {children}
+            // </InputText>
+            <div
+                {...rest}
+                onClick={onClick}
+                className={"border-b-2 border-gray-400 pb-2 flex flex-col"} style={{width: width}}>
+                <h2 className={"mb-2 text-gray-500"}>Status:</h2>
+                <span
+                    className={`
+                    inline-flex p-1 items-center gap-2 rounded-md cursor-pointer ${statusStyle}`}
+                >
+                    {statusLabel}
+                    {children}
+                </span>
+            </div>
+        );
+    }
+
     return (
         <span
+            style={{width: width}}
             {...rest}
-            onClick={ onClick }
-            className={`inline-flex p-1 items-center gap-2 rounded-md cursor-pointer ${statusStyle}`}>
+            onClick={onClick}
+            className={`
+            inline-flex p-1 items-center gap-2 rounded-md cursor-pointer ${statusStyle}`}
+        >
             {statusLabel}
-            { children }
+            {children}
         </span>
     )
 }
@@ -176,3 +215,32 @@ export const typeStatus: SelectionOptionsProps[] = [
     {value: 'PENDING', label: "Pendente"},
     {value: 'PAID', label: "Pago"},
 ]
+
+
+const ROLE_CONFIG: Record<string, { label: string; styles: string; icon:ReactNode}> ={
+    ROLE_ADMIN: {
+        label: "Administrador",
+        styles: "bg-yellow-100 text-yellow-800",
+        icon: <FaCrown className="text-yellow-600" />,
+    },
+    ROLE_USER: {
+        label: "Usuário",
+        styles: "bg-blue-100 text-blue-800",
+        icon: <FaUser className="text-blue-600" />,
+    },
+}
+
+export const translateLabel = (role: string) => {
+    const config = ROLE_CONFIG[role] || {
+        label: "Desconhecido",
+        styles: "bg-gray-100 text-gray-700",
+        icon: <FaQuestion className="text-gray-500" />,
+    };
+
+    return (
+        <span className={`inline-flex items-center gap-2 rounded-full px-2 py-1 text-xs font-medium ${config.styles}`}>
+      {config.icon}
+            {config.label}
+    </span>
+    );
+};

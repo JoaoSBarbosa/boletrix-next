@@ -18,9 +18,11 @@ interface InstallmentStatusProps {
     installment: InstallmentResponseType,
     reloadData: (data: InstallmentResponseType) => void;
     isSmallScreen: boolean;
+    width?: string | number;
+    isMobile: boolean;
 }
 
-export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: InstallmentStatusProps) => {
+export const InstallmentStatus = ({installment, isMobile, width, reloadData, isSmallScreen}: InstallmentStatusProps) => {
 
 
     const MESSAGE = 'Por favor, aguarde. Estamos realizando a operação';
@@ -140,7 +142,7 @@ export const InstallmentStatus = ({installment, reloadData, isSmallScreen}: Inst
             title={showLoading ? "Carregando..." : "Edição de Parcela"}
             width={isSmallScreen ? "95%" : 500}
             trigger={
-                <CardStatusChildren status={installment?.status}>
+                <CardStatusChildren status={installment?.status} width={ width } isMobile={ isMobile }>
                     <NotePencilIcon weight={'regular'}/>
                 </CardStatusChildren>
             }

@@ -1,5 +1,5 @@
 import {createContext, useEffect, useState} from "react";
-import {UserType} from "@/types/UserType";
+import {UserType} from "@/types/user/UserType";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/router";
 

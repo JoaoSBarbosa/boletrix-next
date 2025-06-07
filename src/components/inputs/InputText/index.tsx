@@ -78,6 +78,7 @@ interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
     isText?: boolean;
     isInputSelected?: boolean;
     isDark?: boolean;
+    divColor?: string;
 }
 
 export function InputText({
@@ -92,6 +93,7 @@ export function InputText({
                               justNumber,
                               allowDecimal,
                               children,
+                              divColor,
                               badgeText,
                               pointer,
                               isBadge,
@@ -134,7 +136,7 @@ export function InputText({
 
     const inputClasses = `
     w-full bg-transparent font-medium outline-none
-    ${isDark ? "text-white": ""}
+    ${isDark ? "text-white" : ""}
     ${compactMode ? "text-xs" : "text-lg"}
     ${pointer ? "cursor-pointer" : ""} 
     ${cursorText ? "cursor-text" : ""}
@@ -159,12 +161,12 @@ export function InputText({
                 {formattedTitle}
                 {showBadge && (
                     <span className={`${badgeColor} text-xs font-medium me-2 px-1 py-0.5 rounded`}>
-            {badgeText}
-          </span>
+                        {badgeText}
+                    </span>
                 )}
             </div>
 
-            <div className={inputContainerClasses}>
+            <div className={`${inputContainerClasses}`}>
                 <input
                     onClick={onClick}
                     id={title.toLowerCase().replace(/ /g, '')}
@@ -871,7 +873,7 @@ export function CurrencyInputText({title, isDark, width, children, isDisable, co
                     {...rest}
                     prefix={'R$ '}
                     id={title.toLowerCase().replace(/ /g, '')}
-                    className={`${styles.inputText} ${isDark ? "text-white": "text-gray-700"}`}
+                    className={`${styles.inputText} ${isDark ? "text-white" : "text-gray-700"}`}
                     autoComplete={'off'}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}

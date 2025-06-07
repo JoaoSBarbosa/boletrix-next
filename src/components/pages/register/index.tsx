@@ -164,34 +164,37 @@
 //         </div>
 //     );
 // };
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/router";
-import { HiOutlineUserPlus } from "react-icons/hi2";
-import { FaKey } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
+import {FormEvent, useState} from "react";
+import {useRouter} from "next/router";
+import {HiOutlineUserPlus} from "react-icons/hi2";
+import {FaKey} from "react-icons/fa";
+import {MdEmail} from "react-icons/md";
 
-import { InputText } from "../../inputs/InputText";
-import { Button, ButtonType } from "@/components/buttons";
+import {InputText} from "../../inputs/InputText";
+import {Button, ButtonType} from "@/components/buttons";
 import ApiConnection from "@/util/api";
-import { showToastMessage } from "@/util/util";
-import { useAuth } from "@/hooks/useAuth";
+import {showToastMessage} from "@/util/util";
+import {useAuth} from "@/hooks/useAuth";
 import * as Form from "../../Forms";
+import {UserIcon} from "@phosphor-icons/react";
 
 interface RegisterProps {
     setAction: (action: "login" | "register" | "") => void;
 }
 
-export const Register = ({ setAction }: RegisterProps) => {
+export const Register = ({setAction}: RegisterProps) => {
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showLoading, setShowLoading] = useState(false);
 
     const router = useRouter();
-    const { login } = useAuth();
+    const {login} = useAuth();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+        validateValues();
         if (password !== confirmPassword) {
             showToastMessage({
                 type: "error",
@@ -199,12 +202,14 @@ export const Register = ({ setAction }: RegisterProps) => {
             });
             return;
         }
-
+        setShowLoading(true);
         try {
             // Simulação do cadastro e login (ajuste para endpoint correto se necessário)
-            const response = await ApiConnection(window.location.href).post(`/register`, {
+            const response = await ApiConnection(window.location.href).post(`/users/register`, {
+                name,
                 email,
                 password,
+                confirmationPassword: confirmPassword
             });
 
             const token = response?.data?.token;
@@ -216,16 +221,41 @@ export const Register = ({ setAction }: RegisterProps) => {
                 message: "Cadastro realizado com sucesso!",
             });
 
-            await router.push("/user_systems");
+            await router.push("/payments");
         } catch (error) {
             showToastMessage({
                 type: "error",
                 message: "Erro ao realizar o cadastro!",
             });
             console.error(error);
+        } finally {
+            setShowLoading(false);
         }
     };
 
+    const validateValues = () => {
+
+        if (
+            !name ||
+            !email ||
+            !password ||
+            !confirmPassword
+
+        ) {
+            const missingFields: string[] = [];
+
+            if (!name) missingFields.push("Name");
+            if (!email) missingFields.push("E-mail");
+            if (!password) missingFields.push("Senha");
+            if (!confirmPassword) missingFields.push("Confirmação de Senha");
+
+            showToastMessage({
+                type: "warning",
+                message: `${missingFields.length > 1 ? "Os campos" : ' O campo'}:  ${missingFields.join(', ')} ${missingFields.length > 1 ? "são obrigatórios" : ' é obrigatório'}.`
+            })
+            return;
+        }
+    }
     const isPasswordConfirmed = password === confirmPassword;
 
     return (
@@ -233,10 +263,22 @@ export const Register = ({ setAction }: RegisterProps) => {
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <h1 className="flex items-center gap-2 text-xl font-bold leading-tight tracking-tight text-gray-800 md:text-2xl">
                     Criar sua conta
-                    <HiOutlineUserPlus />
+                    <HiOutlineUserPlus/>
                 </h1>
 
                 <Form.Form flexDirection="column" onSubmit={handleSubmit}>
+
+                    <Form.FormRows justifyContent="flex-start">
+                        <InputText
+                            title="Informe seu nome"
+                            placeholder="Ex.: José Gonçalves"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            width="100%"
+                        >
+                            <UserIcon size={16}/>
+                        </InputText>
+                    </Form.FormRows>
                     <Form.FormRows justifyContent="flex-start">
                         <InputText
                             title="Informe seu melhor e-mail"
@@ -245,7 +287,7 @@ export const Register = ({ setAction }: RegisterProps) => {
                             onChange={(e) => setEmail(e.target.value)}
                             width="100%"
                         >
-                            <MdEmail size={16} />
+                            <MdEmail size={16}/>
                         </InputText>
                     </Form.FormRows>
 
@@ -257,7 +299,7 @@ export const Register = ({ setAction }: RegisterProps) => {
                             onChange={(e) => setPassword(e.target.value)}
                             width="100%"
                         >
-                            <FaKey size={16} />
+                            <FaKey size={16}/>
                         </InputText>
                     </Form.FormRows>
 
@@ -270,7 +312,7 @@ export const Register = ({ setAction }: RegisterProps) => {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 width="100%"
                             >
-                                <FaKey size={16} />
+                                <FaKey size={16}/>
                             </InputText>
                         </Form.FormRows>
                     )}
