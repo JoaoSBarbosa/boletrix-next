@@ -216,6 +216,10 @@ export const typeStatus: SelectionOptionsProps[] = [
     {value: 'PAID', label: "Pago"},
 ]
 
+export const roleType: SelectionOptionsProps[] = [
+    {value: 'ROLE_ADMIN', label: "Administrador"},
+    {value: 'ROLE_USER', label: "Usuário"},
+]
 
 const ROLE_CONFIG: Record<string, { label: string; styles: string; icon:ReactNode}> ={
     ROLE_ADMIN: {
@@ -244,3 +248,16 @@ export const translateLabel = (role: string) => {
     </span>
     );
 };
+
+
+export const handleRoleStatus = (status: string) => {
+
+    switch (status) {
+        case "ROLE_ADMIN":
+            return "Administrador";
+        case "ROLE_USER":
+            return "Administrador";
+        default:
+            return "Desconhecido"
+    }
+}

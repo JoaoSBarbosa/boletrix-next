@@ -7,8 +7,7 @@ import {DownloadingOrDeletingBox, Loading} from "@/components/Loadings";
 import {
     AlignmentColumnTableProps,
     ColumnTableProps,
-    DefaultTable,
-    MobileInstallmentTable
+    DefaultTable
 } from "@/components/tables/DefaultTable";
 import {PageableFooter} from "@/components/pageable";
 import {InstallmentResponseType} from "@/types/InstallmentResponseType";
@@ -26,6 +25,11 @@ import {IoBackspace} from "react-icons/io5";
 import {useMediaQuery} from "react-responsive";
 import {EditUserSystemDialog} from "@/components/pages/user/dialogs/EditUserSystemDialog";
 import {FaCrown, FaUser} from "react-icons/fa";
+import {useAuth} from "@/hooks/useAuth";
+import {UserType} from "@/types/user/UserType";
+import {RegisterUser} from "@/components/pages/user/dialogs/RegisterUser";
+import {MobileUserTable} from "@/components/pages/user/components/mobile";
+import {useWindowSize} from "@/hooks/useWindowSize";
 
 export default function User() {
     const [showLoading, setShowLoading] = useState(false)
@@ -35,6 +39,10 @@ export default function User() {
 
     const [isClient, setIsClient] = useState(false);
     const isMobile = useMediaQuery({maxWidth: 768});
+
+    const {user} = useAuth();
+    const {width} = useWindowSize();
+    const isSmallScreen = width <= 640;
     const [tableComponentMaxHeight, setTableComponentMaxHeight] = useState<string>('');
 
     const clientsTableColumns: ColumnTableProps[] = [
@@ -50,7 +58,10 @@ export default function User() {
             selector: 'name',
             name: 'Nome',
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
-            width: 200
+            width: 200,
+            cell: (row: UserResponseType) => row?.email === user?.email ? (
+                <span className={"bg-green-100 p-1 rounded-md text-green-600"}>{row?.name} (você) </span>
+            ) : row?.name
         },
         {
             id: 'email',
@@ -73,8 +84,6 @@ export default function User() {
                 ) : (
                     "-"
                 ),
-
-            // cell: (row: UserResponseType) => row?.roles ? row.roles.map(role => translateLabel(role.name)) : "-"
         },
 
         {
@@ -83,7 +92,12 @@ export default function User() {
             name: "",
             alignment: AlignmentColumnTableProps.DIREITA,
             width: 100,
-            cell: (row: UserResponseType) => <EditUserSystemDialog user={row}/>
+            cell: (row: UserResponseType) =>
+                row?.email !== user?.email ? (
+                    <EditUserSystemDialog user={row} reloadData={() => {
+                        getAllUsers().then(setUsers)
+                    }}/>
+                ) : null
         },
         {
             id: '',
@@ -91,74 +105,57 @@ export default function User() {
             name: "",
             alignment: AlignmentColumnTableProps.CENTRALIZADO,
             width: 100,
-            cell: (row: InstallmentResponseType) =>
-                <Alert
-                    titleAlert="Confirmação de Exclusão"
-                    descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""}' do sistema?`}
-                    button={
-                        <TableSpanButton
-                            info="Excluir registro de Cliente"
-                            width="max-content"
-                            notBg
-                            theme={ThemeSpan.RED}
-                        >
-                            <IoBackspace size={24} color="#b91c1c" className="cursor-pointer inline-flex"/>
-                        </TableSpanButton>
-                    }
-                    onAccept={() => handleDeleteUser(row?.id)}
-                />
+            cell: (row: UserResponseType) =>
+                row?.email !== user?.email ?
+                    (
+                        <Alert
+                            titleAlert="Confirmação de Exclusão"
+                            descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""}' do sistema?`}
+                            button={
+                                <TableSpanButton
+                                    info="Excluir registro de Cliente"
+                                    width="max-content"
+                                    notBg
+                                    theme={ThemeSpan.RED}
+                                >
+                                    <IoBackspace size={24} color="#b91c1c" className="cursor-pointer inline-flex"/>
+                                </TableSpanButton>
+                            }
+                            onAccept={() => handleDeleteUser(row)}
+                        />
+                    ) : null
         }
     ];
 
 
-    function handleDeleteUser(id: string | number) {
+    async function handleDeleteUser(user: UserResponseType) {
+        if (!user.id) {
+            showToastMessage({
+                type: "warning",
+                message: "Necessário o id para excluir o registro do usuário: " + user?.name,
+            })
+            return;
+        }
+        try {
+            await ApiConnection(window.location.href).delete(`/users/${user.id}`, {
+                timeout: 5 * 60 * 1000
+            })
+            showToastMessage({
+                type: "success",
+                message: `Usuário ${user?.name} deletado com sucesso!`,
+            })
 
+            await getAllUsers().then(setUsers);
+        } catch (error) {
+            showToastMessage({
+                type: "error",
+                message: `Erro ao tentar excluir o usuario ${user?.name}: ${error}`
+            })
+        }
     }
 
-    useEffect(() => {
-        getAllUsers().then(setUsers)
-    }, []);
-
-    useEffect(() => {
-        console.log("USUARIOS: ", users)
-    }, [users]);
-    useEffect(() => {
-        const handleResize = () => {
-            setTableComponentMaxHeight(window.innerWidth <= 1366 ? '50vh' : '70vh');
-        };
-        window.addEventListener('resize', handleResize);
-        handleResize();
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     async function getAllUsers() {
-
-
         let userResponse = [] as UserResponseType[];
-
-
-        // let paramsList = [] as string[];
-        // paramsList.push("size=" + ITEMS_PER_PAGE);
-        // paramsList.push("page=" + (requestPage - 1));
-        //
-        // if (withFilter) {
-        //     setHasFilter(true);
-        //     if (status) paramsList.push("status=" + status);
-        //     if (amount) paramsList.push("amount=" + amount);
-        //     if (paymentDate) paramsList.push("paymentDate=" + paymentDate);
-        //     if (invoiceDate) paramsList.push("invoiceDate=" + invoiceDate);
-        //     if (installmentNumber) paramsList.push("installmentNumber=" + installmentNumber);
-        // } else {
-        //     setHasFilter(false)
-        // }
-        // let paramsPayments = `?`; // Spring usa paginação começando em 0
-        // for (const paramItem of paramsList) {
-        //     paramsPayments += paramItem + "&"
-        // }
-
-
         setShowLoading(true);
         try {
             const response: AxiosResponse<UserResponseType[]> = await ApiConnection(window.location.href).get("/users", {
@@ -177,47 +174,32 @@ export default function User() {
         return userResponse;
     }
 
+    useEffect(() => {
+        getAllUsers().then(setUsers)
+    }, []);
+    useEffect(() => {
+        const handleResize = () => {
+            setTableComponentMaxHeight(window.innerWidth <= 1366 ? '50vh' : '70vh');
+        };
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     return (
         <PrivateRoute>
             <Layout>
 
-
-                {/*<div className={`flex items-center ${isSmallScreen ? "gap-2" : "justify-between"} mb-2`}>*/}
-
-                {/*    <div>*/}
-                {/*        <LocalDebtCard debt={payments[0]?.debtDTO}/>*/}
-                {/*    </div>*/}
-                {/*    <div className={"flex items-center gap-2"}>*/}
-                {/*        {user?.roles?.includes("ROLE_ADMIN") &&*/}
-
-                {/*            <ActionsDropdown*/}
-                {/*                length={payments?.length}*/}
-                {/*                handleDeleteAll={handleDeleteAll}*/}
-                {/*                reload={() => {*/}
-                {/*                    fetchPayments(false).then(setPayments)*/}
-                {/*                }}*/}
-                {/*            />*/}
-                {/*        }*/}
-                {/*        <FiltersDropdown*/}
-                {/*            status={status}*/}
-                {/*            amount={amount}*/}
-                {/*            isMobile={isMobile}*/}
-                {/*            setStatus={setStatus}*/}
-                {/*            setAmount={setAmount}*/}
-                {/*            paymentDate={paymentDate}*/}
-                {/*            invoiceDate={invoiceDate}*/}
-                {/*            setPaymentDate={setPaymentDate}*/}
-                {/*            setInvoiceDate={setInvoiceDate}*/}
-                {/*            installmentId={installmentNumber}*/}
-                {/*            setInstallmentId={setInstallmentNumber}*/}
-                {/*            apply={() => {*/}
-                {/*                fetchPayments(true).then(setPayments)*/}
-                {/*            }}*/}
-                {/*            cleanFilter={handleCleanValues}*/}
-                {/*        />*/}
-                {/*    </div>*/}
-
-                {/*</div>*/}
+                <div className={`flex items-center justify-end w-full mb-2`}>
+                    <RegisterUser reloadData={() => {
+                        getAllUsers().then(setUsers)
+                    }}/>
+                </div>
 
                 {showDelete ?
                     <DownloadingOrDeletingBox isDelete title="Excluindo comprovante(s)"
@@ -228,26 +210,28 @@ export default function User() {
                         : showLoading ?
                             <Loading title="Carregando registros" message="Buscando informações de pagamentos..."/>
                             :
-                            <DefaultTable
-                                columns={clientsTableColumns}
-                                list={users}
-                                maxHeight={tableComponentMaxHeight}
-                            />
-                    // <>
-                    //     {!isClient ? null : isMobile ? (
-                    //         <div className={"max-h-[55vh] overflow-auto"}>
-                    //             {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
-                    //             <div className={"bg-red-400"}>COmponete mobile</div>
-                    //         </div>
-                    //     ) : (
-                    //         <DefaultTable
-                    //             columns={clientsTableColumns}
-                    //             list={users.length > 0 ? users : []}
-                    //             maxHeight={tableComponentMaxHeight}
-                    //         />
-                    //     )}
-                    //
-                    // </>
+                            <>
+                                {!isClient ? null : isMobile ? (
+                                    <div className={"max-h-[70vh] overflow-auto"}>
+                                        <MobileUserTable
+                                            list={users}
+                                            onDelete={handleDeleteUser}
+                                            reloadData={() => {
+                                                getAllUsers().then(setUsers)
+                                            }}
+                                            isSmallScreen={isSmallScreen}
+                                        />
+                                        {/*<div className={"bg-red-400"}>COmponete mobile</div>*/}
+                                    </div>
+                                ) : (
+                                    <DefaultTable
+                                        columns={clientsTableColumns}
+                                        list={users.length > 0 ? users : []}
+                                        maxHeight={tableComponentMaxHeight}
+                                    />
+                                )}
+
+                            </>
 
                 }
             </Layout>

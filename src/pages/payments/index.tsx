@@ -10,9 +10,7 @@ import {TableSpanButton, ThemeSpan,} from "@/components/buttons";
 import {
     AlignmentColumnTableProps,
     ColumnTableProps,
-    DefaultTable,
-    MobileInstallmentTable
-} from "@/components/tables/DefaultTable";
+    DefaultTable} from "@/components/tables/DefaultTable";
 import {Alert} from "@/components/alert";
 import {IoBackspace} from "react-icons/io5";
 import {EditInstallmentDialog} from "@/components/pages/payments/dialogs/EditInstallmentDialog";
@@ -28,6 +26,7 @@ import {useWindowSize} from "@/hooks/useWindowSize";
 import {DownloadSimpleIcon} from "@phosphor-icons/react";
 import {DownloadingOrDeletingBox, Loading} from "@/components/Loadings";
 import {ReceiptActions} from "@/components/pages/payments/dialogs/ReceiptActions";
+import {MobileInstallmentTable} from "@/components/pages/payments/components/mobile";
 
 export default function Payments() {
 
