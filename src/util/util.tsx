@@ -7,6 +7,7 @@ import {SelectionOptionsProps} from "@/components/select";
 import {InputText} from "@/components/inputs/InputText";
 import {ChartLineIcon} from "@phosphor-icons/react";
 import {FaCrown, FaQuestion, FaUser} from "react-icons/fa";
+import {AxiosError} from "axios";
 
 interface ShowToastMessageProps {
     type: 'info' | 'warning' | 'error' | 'success' | 'dark' | 'warn',
@@ -36,6 +37,20 @@ export function showToastMessage({type, message}: ShowToastMessageProps) {
     }
 }
 
+export const ShowAxiosError = (error: unknown) => {
+    let message = "Erro inesperado.";
+
+    if (error instanceof AxiosError) {
+        message = error.response?.data?.message || error.message;
+    } else if (typeof error === "string") {
+        message = error;
+    }
+
+    showToastMessage({
+        type: "error",
+        message: `Erro na operação: ${message}`,
+    });
+};
 
 export const formatedDate = (date: string) => {
     if (!date) return "";
