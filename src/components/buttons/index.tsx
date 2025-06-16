@@ -36,7 +36,8 @@ export enum BgColor {
     SUCCESS_2 = "bg-[#3EB489] text-white",       // Verde Menta, alegre e natural
     WARNING_2 = "bg-[#D4A017] text-white",       // Amarelo Mostarda, vibrante mas sóbrio
     ACCENT = "bg-[#FF6F61] text-white",        // Coral Suave, quente e vibrante
-    INFO = "bg-[#3A8DFF] text-white"
+    INFO = "bg-[#3A8DFF] text-white",
+    ACCENT_SYSTEM = "ACCENT_SYSTEM"
 }
 
 interface ButtonProps {

@@ -45,6 +45,8 @@ export interface ColumnTableProps<T = any> {
     background?: (row: T) => string;
     icon?: React.ReactNode;
     showHeader?: boolean;
+      exportable?: boolean; // ✅ NOVO
+
 }
 
 interface DefaultTableProps<T = any> {
