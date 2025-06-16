@@ -60,7 +60,6 @@
 //   );
 // };
 
-
 import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -87,9 +86,9 @@ export const PdfExportButton = <T,>({
   const { user } = useAuth();
 
   function hexToRgb(hex: string): [number, number, number] {
-  const bigint = parseInt(hex.replace("#", ""), 16);
-  return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
-}
+    const bigint = parseInt(hex.replace("#", ""), 16);
+    return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+  }
 
   const handleDownloadPDF = async () => {
     const doc = new jsPDF();
@@ -117,10 +116,10 @@ export const PdfExportButton = <T,>({
       styles: { halign: "center" },
       // headStyles: { fillColor: [22, 160, 133] },
       headStyles: {
-  fillColor: hexToRgb("#00384D"), // azul escuro para o header
-  textColor: [255, 255, 255],     // branco no texto do cabeçalho
-  fontStyle: 'bold',
-},
+        fillColor: hexToRgb("#00384D"), // azul escuro para o header
+        textColor: [255, 255, 255], // branco no texto do cabeçalho
+        fontStyle: "bold",
+      },
 
       margin: { top: 45, bottom: 20 },
       didDrawPage: () => drawFooter(doc),
