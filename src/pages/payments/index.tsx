@@ -109,16 +109,14 @@ export default function Payments() {
       selector: "installmentNumber",
       name: "Nº",
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
-      width: 50,
-      exportable: true,
+      width: 50
     },
     {
       id: "amount",
       selector: "amount",
       name: "Valor",
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
-      width: 100,
-      exportable: true,
+      width: 100
     },
     {
       id: "installmentDate",
@@ -126,8 +124,6 @@ export default function Payments() {
       name: "Data parcela",
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
       width: 160,
-      exportable: true,
-
       cell: (row: InstallmentResponseType) =>
         row?.installmentDate ? formatedDate(row.installmentDate) : "-",
     },
@@ -137,8 +133,6 @@ export default function Payments() {
       name: "Status do Pagamento",
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
       width: 160,
-      exportable: true,
-
       cell: (row: InstallmentResponseType) =>
         user?.roles?.includes("ROLE_ADMIN") ? (
           <InstallmentStatus
@@ -156,8 +150,6 @@ export default function Payments() {
       id: "paymentDate",
       name: "Data Pagamento",
       selector: "paymentDate",
-      exportable: true,
-
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
       cell: (row: InstallmentResponseType) =>
         row?.paymentDate
@@ -168,8 +160,6 @@ export default function Payments() {
       id: "receiptUrl",
       selector: "receiptUrl",
       name: "Comprovante",
-      exportable: true,
-
       alignment: AlignmentColumnTableProps.CENTRALIZADO,
       width: 200,
       cell: (row: InstallmentResponseType) =>
@@ -184,6 +174,43 @@ export default function Payments() {
     },
   ];
 
+  // ⬇️ Adiciona colunas extras se for ROLE_ADMIN
+    if (user?.roles?.includes("ROLE_ADMIN")) {
+        clientsTableColumns.push(
+            {
+                id: 'edit',
+                selector: 'edit',
+                name: "Editar",
+                alignment: AlignmentColumnTableProps.CENTRALIZADO,
+                width: 200,
+                cell: (row: InstallmentResponseType) =>
+                    <EditInstallmentDialog installment={row} reload={reloadList}/>
+            },
+            {
+                id: 'delete',
+                selector: 'delete',
+                name: "Excluir",
+                alignment: AlignmentColumnTableProps.CENTRALIZADO,
+                width: 200,
+                cell: (row: InstallmentResponseType) =>
+                    <Alert
+                        titleAlert="Confirmação de Exclusão"
+                        descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${row?.id ? "Nº" + row.id : ""}' do sistema?`}
+                        button={
+                            <TableSpanButton
+                                info="Excluir registro de Cliente"
+                                width="max-content"
+                                notBg
+                                theme={ThemeSpan.RED}
+                            >
+                                <IoBackspace size={24} color="#b91c1c" className="cursor-pointer inline-flex"/>
+                            </TableSpanButton>
+                        }
+                        onAccept={() => handleDeleteInstallment(row?.id)}
+                    />
+            }
+        );
+    }
   const paymentsExportColumns: ColumnTableProps[] = [
     {
       id: "installmentNumber",
