@@ -519,7 +519,7 @@ export default function Payments() {
                 ) : (
                     <>
                         {!isClient ? null : isMobile ? (
-                            <div className={"max-h-[70vh] overflow-auto"}>
+                            <div className={"max-h-[60vh] overflow-auto"}>
                                 {/*<MobileTable columns={clientsTableColumns} list={payments}/>*/}
                                 <MobileInstallmentTable
                                     list={payments}
