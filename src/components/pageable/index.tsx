@@ -42,6 +42,81 @@ export function PageableFooter(
         setMaxPage(Math.ceil(totalItems / itemPerPage));
     }, [itemPerPage]);
 
+    if (isSmallScreen) {
+        return (
+            <div className={`${styles.rootMobile} ${border ? "border border-gray-200 rounded-md p-2" : ""} mt-4`}>
+                <div className={styles.mobileNavRow}>
+                    <button
+                        disabled={page === 1}
+                        onClick={() => onBackPage(1)}
+                        className={styles.mobileNavButton}
+                        title="Primeira página"
+                    >
+                        <RewindIcon size={'20px'} weight="fill"/>
+                    </button>
+
+                    <button
+                        disabled={page === 1}
+                        onClick={() => onBackPage(page - 1)}
+                        className={styles.mobileNavButton}
+                        title="Anterior"
+                    >
+                        <SkipBackIcon size={'20px'} weight="fill"/>
+                    </button>
+
+                    <span className={styles.mobilePageInfo}>
+                    {page} / {maxPage}
+                </span>
+
+                    <button
+                        disabled={!hasNextPage}
+                        onClick={() => onNextPage(page + 1)}
+                        className={styles.mobileNavButton}
+                        title="Próxima"
+                    >
+                        <SkipForwardIcon size={'20px'} weight="fill"/>
+                    </button>
+
+                    <button
+                        disabled={!hasNextPage}
+                        onClick={() => onNextPage(maxPage)}
+                        className={styles.mobileNavButton}
+                        title="Última página"
+                    >
+                        <RewindCircleIcon
+                            size={'20px'}
+                            weight="fill"
+                            style={{rotate: '180deg'}}
+                        />
+                    </button>
+                </div>
+
+                <div className={styles.mobileInfoRow}>
+                    <div className={styles.mobileInfoBlock}>
+                        <ListIcon size={'18px'} weight="bold" style={{ marginRight: '4px' }} />
+                        <span>Total:</span>
+                        <strong style={{ marginLeft: '4px' }}>
+                            {totalItems} {totalItems === 1 ? 'item' : 'itens'}
+                        </strong>
+                    </div>
+
+                    <div className={styles.mobileInfoBlock}>
+                        <ArchiveIcon
+                            size={'18px'}
+                            weight="bold"
+                            style={{ marginRight: '4px' }}
+                            color={quantityItemsList === 0 ? '#dc2626' : '#15803d'}
+                        />
+                        <span>Exibindo:</span>
+                        <strong style={{ marginLeft: '4px', color: quantityItemsList === 0 ? '#dc2626' : '#15803d' }}>
+                            {quantityItemsList} {quantityItemsList === 1 ? 'item' : 'itens'}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
 
     return (
         <div className={`${styles.root} ${border ? "border border-gray-200" : ""}`}>
@@ -154,103 +229,6 @@ export function PageableFooter(
             </div>
         </div>
     );
-}
 
-//
-// import {
-//     SkipForwardIcon,
-//     SkipBackIcon,
-//     RewindIcon,
-//     RewindCircleIcon,
-//     ListIcon,
-//     ArchiveIcon
-// } from "@phosphor-icons/react";
-// import { useEffect, useState } from "react";
-// import styles from "./PageableFooter.module.css";
-//
-// interface PageableFooterProps {
-//     page: number;
-//     itemPerPage: number;
-//     quantityItemsList: number;
-//     totalItems: number;
-//     hasNextPage: boolean;
-//     onNextPage: (nextPage: number) => void;
-//     onBackPage: (nextPage: number) => void;
-// }
-//
-// export function PageableFooter({
-//                                    page,
-//                                    itemPerPage,
-//                                    quantityItemsList,
-//                                    totalItems,
-//                                    hasNextPage,
-//                                    onNextPage,
-//                                    onBackPage
-//                                }: PageableFooterProps) {
-//     const [maxPage, setMaxPage] = useState(Math.ceil(totalItems / itemPerPage));
-//     const [isMobile, setIsMobile] = useState(false);
-//
-//     useEffect(() => {
-//         setMaxPage(Math.ceil(totalItems / itemPerPage));
-//     }, [itemPerPage, totalItems]);
-//
-//     useEffect(() => {
-//         const check = () => setIsMobile(window.innerWidth <= 768);
-//         check();
-//         window.addEventListener("resize", check);
-//         return () => window.removeEventListener("resize", check);
-//     }, []);
-//
-//     return (
-//         <footer className={styles.container}>
-//             <div className={styles.paginationInfo}>
-//                 Página {page} de {maxPage}
-//             </div>
-//
-//             <div className={styles.buttons}>
-//                 {page > 1 && (
-//                     <button onClick={() => onBackPage(1)} className={styles.btn}>
-//                         <RewindIcon size={20} weight="bold" />
-//                     </button>
-//                 )}
-//                 <button
-//                     onClick={() => onBackPage(page - 1)}
-//                     className={styles.btn}
-//                     disabled={page === 1}
-//                 >
-//                     <SkipBackIcon size={20} weight="bold" />
-//                 </button>
-//
-//                 <button
-//                     onClick={() => onNextPage(page + 1)}
-//                     className={styles.btn}
-//                     disabled={!hasNextPage}
-//                 >
-//                     <SkipForwardIcon size={20} weight="bold" />
-//                 </button>
-//
-//                 {hasNextPage && (
-//                     <button
-//                         onClick={() => onNextPage(maxPage)}
-//                         className={styles.btn}
-//                     >
-//                         <RewindCircleIcon
-//                             size={20}
-//                             weight="bold"
-//                             style={{ rotate: "180deg" }}
-//                         />
-//                     </button>
-//                 )}
-//             </div>
-//
-//             <div className={styles.info}>
-//         <span>
-//           <ListIcon size={16} /> {totalItems} itens
-//         </span>
-//                 <span>
-//           <ArchiveIcon size={16} /> {quantityItemsList} selecionados
-//         </span>
-//             </div>
-//         </footer>
-//     );
-// }
+
+}

@@ -95,6 +95,69 @@
     color: #FFFFFF;
 }
 
+
+.rootMobile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #ffffff;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.05);
+}
+
+.mobileNavRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.mobileNavButton {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #1f2937;
+    transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.mobileNavButton:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.mobileNavButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mobilePageInfo {
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: center;
+    color: #111827;
+}
+
+.mobileInfoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.mobileInfoBlock {
+    display: flex;
+    align-items: center;
+}
+
+
+
 @media ( min-width: 1360px ) and ( max-width: 1600px ) {
     .infoIconContainer {
         width: 22px;

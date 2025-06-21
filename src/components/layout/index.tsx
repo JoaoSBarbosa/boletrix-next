@@ -9,16 +9,11 @@ interface LayoutProps {
 export const Layout = ({children}: LayoutProps) => {
 
     return (
-        // <section className={"w-screen min-h-[100dvh] flex flex-col items-center bg-gray-50"}>
-        <section className={"w-screen min-h-[100dvh] flex flex-col bg-gray-50"}>
+        <section className={"w-screen min-h-[100dvh] flex flex-col bg-gray-50 "}>
             <Header/>
             <div className="flex-1 w-full">
                 <Main>{children}</Main>
             </div>
-            {/*<Main>*/}
-            {/*    {children}*/}
-            {/*</Main>*/}
-            <Footer/>
         </section>
     )
 }

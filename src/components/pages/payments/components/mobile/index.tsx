@@ -48,19 +48,43 @@ export const MobileInstallmentTable = ({
 
             {list?.map((item, index) => (
 
-                <Form.Form flexDirection={"column"} customStyles={"bg-gray-800 rounded-md mb-4"}>
+                <Form.Form flexDirection={"column"}
+                    // customStyles={"bg-gray-100 shadow rounded-md mb-4 border border-gray-200"}
+
+                           customStyles={`
+        bg-white 
+        shadow-md 
+        rounded-lg 
+        mb-4 
+        border border-gray-200 
+        p-4
+        transition-all 
+        duration-200 
+        hover:shadow-lg
+    `}
+                >
+
                     <Form.FormRows justifyContent={"flex-start"}>
                         <InputText
-                            isDark={true}
+                            colorMode={"light"}
                             title={"Nº"}
                             value={item?.installmentNumber}
                             width={"50%"}
                         >
                             <FilesIcon/>
                         </InputText>
+
+                        {/*<InputText*/}
+                        {/*    colorMode={"light"}*/}
+                        {/*    title={"Valor"}*/}
+                        {/*    value={item?.amount ? `R$ ${item?.amount}`: "-"}*/}
+                        {/*    width={"50%"}*/}
+                        {/*>*/}
+                        {/*    <MoneyIcon/>*/}
+                        {/*</InputText>*/}
                         <CurrencyInputText
                             title={"Valor"}
-                            isDark={true}
+                            colorMode={"light"}
                             value={item?.amount}
                             width={"50%"}
                         >
@@ -73,14 +97,14 @@ export const MobileInstallmentTable = ({
                             <InstallmentStatus
                                 width={"50%"}
                                 installment={item}
-                                isMobile={ true }
+                                isMobile={true}
                                 reloadData={reloadData}
                                 isSmallScreen={isSmallScreen}
                             />
                             :
 
                             <InputText
-                                isDark={true}
+                                colorMode={"light"}
                                 title={"Status"}
                                 value={handleShowStatus(item?.status)}
                                 width={"50%"}
@@ -93,65 +117,35 @@ export const MobileInstallmentTable = ({
                             title={"Parcela"}
                             value={item?.installmentDate ? formatedDate(item.installmentDate) : "-"}
                             width={"50%"}
-                            isDark={true}
-                        >
-                            <CalendarIcon/>
-                        </InputText>
+                            colorMode={"light"}
+                        />
 
                     </Form.FormRows>
 
                     <Form.FormRows justifyContent={"flex-start"}>
-                        {/*<InputText*/}
-                        {/*    title={"Parcela"}*/}
-                        {/*    value={item?.installmentDate ? formatedDate(item.installmentDate) : "-"}*/}
-                        {/*    width={"50%"}*/}
-                        {/*    isDark={true}*/}
-                        {/*>*/}
-                        {/*    <CalendarIcon/>*/}
-                        {/*</InputText>*/}
 
                         <InputText
                             title={"Data Pagamento"}
                             value={item?.paymentDate ? formatedDate(item.paymentDate) : "-"}
                             width={"50%"}
-                            isDark={true}
-                        >
-                            <CalendarIcon/>
-                        </InputText>
+                            colorMode={"light"}
+                       />
                         <InputText
                             title={"Hora Pagamento"}
                             value={item?.paymentTime}
                             width={"50%"}
                             type={"time"}
-                            isDark={true}
+                            colorMode={"light"}
                         />
                     </Form.FormRows>
 
-                    {/*<Form.FormRows justifyContent={"flex-start"}>*/}
-                    {/*        <InputText*/}
-                    {/*            title={"Comprovante"}*/}
-                    {/*            isDark={ true }*/}
-                    {/*            value={item?.receiptUrl ? item.receiptUrl : "-"}*/}
-                    {/*            width={"100%"}*/}
-                    {/*        >*/}
-                    {/*            <ReceiptIcon/>*/}
-                    {/*        </InputText>*/}
-                    {/*    */}
-                    {/*</Form.FormRows>*/}
+
                     {item?.receiptPath &&
-                        // <Form.FormRows justifyContent={"flex-start"}>
-                        //     <h2>Comprovante</h2>
-                        //     <ReceiptActions
-                        //         onDownload={() => onDownload(item)}
-                        //         row={item}
-                        //     />
-                        // </Form.FormRows>
-
-                        <div className={"w-full border-b-2 pb-2 border-gray-500 flex items-center justify-between gap-2"}>
-
+                        <div
+                            className={"w-full border-b-2 pb-2 border-gray-500 flex items-center justify-between gap-2"}>
                             <div className={"flex items-center gap-2 text-gray-400"}>
                                 <h2>Comprovante</h2>
-                                <ArrowRightIcon/>
+                                <ArrowRightIcon color={"#15803d"} weight={"fill"}/>
                             </div>
                             <ReceiptActions
                                 onDownload={() => onDownload(item)}

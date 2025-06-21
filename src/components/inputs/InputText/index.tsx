@@ -27,6 +27,7 @@ import React, {KeyboardEvent} from 'react';
 // CSS of Componenet
 import styles from './InputText.module.css';
 import scrollStyles from "../../styles/customerScroll/CustomerScrol.module.css"
+import {handleDarkMode} from "@/util/util";
 
 export enum InputTextColorEnum {
     DEFAULT = '#374151',
@@ -79,6 +80,8 @@ interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
     isInputSelected?: boolean;
     isDark?: boolean;
     divColor?: string;
+    colorMode?: colorModeType;
+
 }
 
 export function InputText({
@@ -99,6 +102,7 @@ export function InputText({
                               isBadge,
                               badgeColor = BadgeColor.YELLOW,
                               compactMode,
+                              colorMode,
                               cursorText,
                               ...rest
                           }: InputTextProps) {
@@ -136,7 +140,7 @@ export function InputText({
 
     const inputClasses = `
     w-full bg-transparent font-medium outline-none
-    ${isDark ? "text-white" : ""}
+    ${handleDarkMode(colorMode)}
     ${compactMode ? "text-xs" : "text-lg"}
     ${pointer ? "cursor-pointer" : ""} 
     ${cursorText ? "cursor-text" : ""}
@@ -842,16 +846,28 @@ const InputTextRef = React.forwardRef<HTMLInputElement, InputTextPropsRef>(({
 
 export default InputTextRef;
 
+export type colorModeType = "dark" | "light" | "";
+
 interface CurrencyInputTextProps extends CurrencyInputProps {
     title: string;
     width?: string | number;
     children?: ReactNode;
     color?: InputTextColorEnum;
     isDisable?: boolean;
+    colorMode?: colorModeType
     isDark?: boolean;
 }
 
-export function CurrencyInputText({title, isDark, width, children, isDisable, color, ...rest}: CurrencyInputTextProps) {
+export function CurrencyInputText({
+                                      title,
+                                      colorMode,
+                                      isDark,
+                                      width,
+                                      children,
+                                      isDisable,
+                                      color,
+                                      ...rest
+                                  }: CurrencyInputTextProps) {
 
     const [isFocused, setIsFocused] = useState<boolean>(false);
 
@@ -873,7 +889,8 @@ export function CurrencyInputText({title, isDark, width, children, isDisable, co
                     {...rest}
                     prefix={'R$ '}
                     id={title.toLowerCase().replace(/ /g, '')}
-                    className={`${styles.inputText} ${isDark ? "text-white" : "text-gray-700"}`}
+                    // className={`${styles.inputText} ${isDark ? "text-white" : "text-gray-700"}`}
+                    className={`${styles.inputText} ${handleDarkMode(colorMode)}`}
                     autoComplete={'off'}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}

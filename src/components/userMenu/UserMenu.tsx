@@ -10,6 +10,7 @@ import {UserMenuButton} from "@/components/buttons";
 import {FaUserCog} from "react-icons/fa";
 import { useRouter } from "next/router";
 import {MdOutlinePayments} from "react-icons/md";
+import {getFirstAndLastName} from "@/util/util";
 
 interface UserMenuProps {
     onEdit?: () => void;
@@ -70,7 +71,7 @@ export const UserMenu = ({onLogout, onEdit, onDelete}: UserMenuProps) => {
                             {getInitials(user?.name)}
                         </Avatar.Fallback>
                     </Avatar.Root>
-                    <span className="text-sm font-medium">{user.name}</span>
+                    <span className="text-sm font-medium">{getFirstAndLastName(user.name)}</span>
                     {isOpen ? <IoIosArrowUp/> : <IoIosArrowDown/>}
 
                 </div>
