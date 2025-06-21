@@ -11,7 +11,8 @@ import axios from "axios";
 //     return url + ":" + porta;
 // }
 export function getUrlConnection(currentLocation: string) {
-    const railwayUrl = "https://zucchini-essence-production.up.railway.app";
+    // const railwayUrl = "https://zucchini-essence-production.up.railway.app";
+    const railwayUrl = "zucchini-essence-production.up.railway.app";
 
     // Se estiver em localhost (desenvolvimento)
     if (typeof window !== "undefined" && window.location.hostname === "localhost") {
