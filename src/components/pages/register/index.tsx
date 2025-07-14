@@ -173,7 +173,7 @@ import { MdEmail } from "react-icons/md";
 import { InputText } from "../../inputs/InputText";
 import { Button, ButtonType } from "@/components/buttons";
 import ApiConnection from "@/util/api";
-import { showToastMessage } from "@/util/util";
+import { getVisibilityIcon, showToastMessage } from "@/util/util";
 import { useAuth } from "@/hooks/useAuth";
 import * as Form from "../../Forms";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@phosphor-icons/react";
@@ -261,35 +261,6 @@ export const Register = ({ setAction }: RegisterProps) => {
   };
   const isPasswordConfirmed = password === confirmPassword;
 
-  const getVisibilityIcon = (
-    isVisible: boolean,
-    toggle: () => void,
-    hasValue: boolean
-  ) => {
-    if (!hasValue) return <FaKey size={16} className="text-gray-500" />;
-
-    return isVisible ? (
-      <span title="Ocultar senha">
-        <EyeSlashIcon
-          size={24}
-          weight="fill"
-          className="cursor-pointer fill-red-600"
-          onClick={toggle}
-          aria-label="Ocultar senha"
-        />
-      </span>
-    ) : (
-      <span title="Exibir senha">
-        <EyeIcon
-          size={24}
-          weight="fill"
-          className="cursor-pointer fill-green-800"
-          onClick={toggle}
-          aria-label="Exibir senha"
-        />
-      </span>
-    );
-  };
   return (
     <div className="w-full bg-gray-50 rounded-lg shadow md:mt-0 xl:p-0">
       <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
