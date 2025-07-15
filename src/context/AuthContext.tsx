@@ -68,6 +68,7 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("token");
     await router.push("/");
   };
+
   const decodeAndSetUser = (token: string) => {
     try {
       const payload = jwtDecode<any>(token);

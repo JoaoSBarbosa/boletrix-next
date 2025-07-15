@@ -49,12 +49,15 @@ export const Login = ({ setAction }: LoginProps) => {
         message: "Login realizado com sucesso!",
       });
       await router.push("/payments");
-    } catch (error) {
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        "Erro ao fazer login. Tente novamente mais tarde.";
+
       showToastMessage({
         type: "error",
-        message: "Erro ao fazer o login!",
+        message,
       });
-      console.error(error);
     }
   }
 
