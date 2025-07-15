@@ -46,12 +46,6 @@ export const UserMenu = ({ onLogout, onEdit, onDelete }: UserMenuProps) => {
   };
 
   const menuList: menuProps[] = [
-    {
-      icon: <Trash size={16} />,
-      name: "Excluir conta",
-      //  onClick: onDelete
-      onClick: onDelete,
-    },
     { icon: <LogOut size={16} />, name: "Sair", onClick: onLogout },
   ];
 
@@ -102,20 +96,20 @@ export const UserMenu = ({ onLogout, onEdit, onDelete }: UserMenuProps) => {
         <div className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer">
           <DeleteUserDialog />
         </div>
-        <MenuItem
+        {/* <MenuItem
           icon={<LogOut size={16} />}
           name={"Sair"}
           onClick={onLogout}
-        />
+        /> */}
 
-        {/* {menuList.map((menu) => (
+        {menuList.map((menu) => (
           <MenuItem
             icon={menu.icon}
             name={menu.name}
             key={menu.name}
             onClick={menu.onClick}
           />
-        ))} */}
+        ))}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
