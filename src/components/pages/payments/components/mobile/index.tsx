@@ -152,32 +152,33 @@ export const MobileInstallmentTable = ({
               <ReceiptActions onDownload={() => onDownload(item)} row={item} />
             </div>
           )}
+          {user?.roles?.includes("ROLE_ADMIN") && (
+            <Form.FormRows justifyContent={"flex-start"}>
+              <EditInstallmentDialog installment={item} iconSize={32} />
 
-          <Form.FormRows justifyContent={"flex-start"}>
-            <EditInstallmentDialog installment={item} iconSize={32} />
-
-            <Alert
-              titleAlert={`Confirmação de Exclusão`}
-              descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${
-                item?.id ? "Nº" + item.id : ""
-              }' do sistema?`}
-              button={
-                <TableSpanButton
-                  info={"Excluir registro de Cliente"}
-                  width={"max-content"}
-                  notBg={true}
-                  theme={ThemeSpan.RED}
-                >
-                  <IoBackspace
-                    size={32}
-                    color={"#b91c1c"}
-                    className={"cursor-pointer inline-flex"}
-                  />
-                </TableSpanButton>
-              }
-              onAccept={() => onDelete(item?.id)}
-            />
-          </Form.FormRows>
+              <Alert
+                titleAlert={`Confirmação de Exclusão`}
+                descriptionAlert={`Atenção! Esta ação é irreversível. Tem certeza de que deseja excluir o registro de pagamentos '${
+                  item?.id ? "Nº" + item.id : ""
+                }' do sistema?`}
+                button={
+                  <TableSpanButton
+                    info={"Excluir registro de Cliente"}
+                    width={"max-content"}
+                    notBg={true}
+                    theme={ThemeSpan.RED}
+                  >
+                    <IoBackspace
+                      size={32}
+                      color={"#b91c1c"}
+                      className={"cursor-pointer inline-flex"}
+                    />
+                  </TableSpanButton>
+                }
+                onAccept={() => onDelete(item?.id)}
+              />
+            </Form.FormRows>
+          )}
         </Form.Form>
       ))}
     </>
