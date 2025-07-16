@@ -241,7 +241,7 @@ export const handleRoleStatus = (status: string) => {
     case "ROLE_ADMIN":
       return "Administrador";
     case "ROLE_USER":
-      return "Administrador";
+      return "Usuário";
     default:
       return "Desconhecido";
   }

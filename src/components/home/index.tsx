@@ -10,9 +10,6 @@ export const HomeLogin = () => {
     "login"
   );
 
-  useEffect(() => {
-    console.log("action", action);
-  }, [action]);
   return (
     // <section className=" w-1/2 h-1/2 border flex flex-col items-center border-red-500">
     <section className="w-full h-full p-4 lg:p-1 lg:w-1/3 flex flex-col items-center">

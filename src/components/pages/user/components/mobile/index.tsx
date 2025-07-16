@@ -27,7 +27,6 @@ export const MobileUserTable = ({
 
   return list?.map((item) => {
     const isLoggedUser = item?.email === user?.email;
-
     return (
       <Form.Form
         key={item?.id}

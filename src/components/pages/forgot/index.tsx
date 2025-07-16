@@ -29,8 +29,6 @@ export default function Forgot({ setAction }: ForgotProps) {
         message: "Enviamos um link de recuperação para o seu e-mail.",
       });
     } catch (error) {
-      console.log("ERRO:", error);
-
       setEmailSent(false);
       ShowAxiosError(error);
     }

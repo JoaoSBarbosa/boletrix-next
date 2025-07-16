@@ -459,7 +459,7 @@ export default function Payments() {
         row.id === updateInstallment?.id ? updateInstallment : row
       )
     );
-    debtCardRef.current?.reloadDebt(); // 👈 atualiza os dados da dívida!
+    debtCardRef.current?.reloadDebt();
   };
 
   return (

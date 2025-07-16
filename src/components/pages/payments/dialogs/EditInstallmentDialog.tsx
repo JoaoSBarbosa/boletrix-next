@@ -123,9 +123,6 @@ export const EditInstallmentDialog = ({
     }
   }
 
-  useEffect(() => {
-    console.log("DATA DE PAGAMENTO: ", paymentDate);
-  }, [paymentDate]);
   return (
     <Modal
       padding={isSmallScreen ? "p-2" : "p-6"}
