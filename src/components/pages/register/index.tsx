@@ -179,7 +179,7 @@ import * as Form from "../../Forms";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@phosphor-icons/react";
 
 interface RegisterProps {
-  setAction: (action: "login" | "register" | "") => void;
+  setAction: (action: "login" | "register" | "forgot" | "") => void;
 }
 
 export const Register = ({ setAction }: RegisterProps) => {

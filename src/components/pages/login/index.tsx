@@ -1,8 +1,12 @@
 import { Input, TypeInput } from "@/components/inputs";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { BgColor, Button, ButtonType } from "@/components/buttons";
 import ApiConnection from "@/util/api";
-import { getVisibilityIcon, showToastMessage } from "@/util/util";
+import {
+  getVisibilityIcon,
+  ShowAxiosError,
+  showToastMessage,
+} from "@/util/util";
 import { useRouter } from "next/router";
 import { useAuth } from "@/hooks/useAuth";
 import * as Form from "../../Forms";
@@ -11,13 +15,13 @@ import { FaEnvelope, FaKey } from "react-icons/fa";
 import { EnvelopeIcon } from "@phosphor-icons/react";
 
 interface LoginProps {
-  setAction: (action: "login" | "register" | "") => void;
+  setAction: (action: "login" | "register" | "forgot" | "") => void;
 }
 export const Login = ({ setAction }: LoginProps) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [activeForm, setActiveForm] = useState<
-    "login" | "recover" | "create" | ""
+    "login" | "forgot" | "create" | ""
   >("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -30,7 +34,7 @@ export const Login = ({ setAction }: LoginProps) => {
     if (activeForm === "login") {
       await handleLogin();
     }
-    if (activeForm === "recover") {
+    if (activeForm === "forgot") {
       console.log("Recuperar senha", { email });
     }
   };
@@ -101,7 +105,7 @@ export const Login = ({ setAction }: LoginProps) => {
             <button
               type="button"
               className="text-sm text-blue-600 hover:underline"
-              onClick={() => setActiveForm("recover")}
+              onClick={() => setAction("forgot")}
             >
               Esqueceu sua senha?
             </button>
