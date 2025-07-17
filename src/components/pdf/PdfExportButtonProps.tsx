@@ -85,14 +85,14 @@ export const PdfExportButton = <T,>({
         <ButtonRef
           title="Exportar PDF"
           width="max-content"
-          value="Exportando..."
+          value=""
           disabled
           type={ButtonType.BUTTON}
           bgColor={BgColor.PRIMARY_SYSTEM}
         >
           <svg
             aria-hidden="true"
-            className="w-[24px] h-[24px] text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+            className="h-[24px] text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
