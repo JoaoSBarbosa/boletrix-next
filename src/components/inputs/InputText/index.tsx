@@ -893,6 +893,12 @@ interface CurrencyInputTextProps extends CurrencyInputProps {
   isDisable?: boolean;
   colorMode?: colorModeType;
   isDark?: boolean;
+  compactMode?: boolean;
+  isDisabled?: boolean;
+  cursorText?: boolean;
+  isInputSelected?: boolean;
+  pointer?: boolean;
+  notMargin?: boolean;
 }
 
 export function CurrencyInputText({
@@ -902,11 +908,45 @@ export function CurrencyInputText({
   width,
   children,
   isDisable,
+  compactMode,
+  pointer,
+  isInputSelected,
+  isDisabled,
+  cursorText,
+  notMargin,
   color,
   ...rest
 }: CurrencyInputTextProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const formattedTitle = title?.includes(":") ? title : title + ":";
 
+  const baseClasses = `
+    flex flex-col items-start justify-center w-full p-1 transition-colors duration-500
+    ${isDisabled ? "bg-gray-100" : ""} 
+    ${cursorText ? "cursor-text" : ""}
+  `;
+
+  const compactClasses = `
+    ${baseClasses}
+    ${isInputSelected ? "border-none" : "border-b-2 border-gray-300"}
+  `;
+
+  const inputContainerClasses = compactMode
+    ? `flex items-center gap-1 w-full ${
+        isInputSelected
+          ? "relative border border-gray-500 bg-gray-200 rounded p-0.5"
+          : ""
+      }`
+    : "flex items-center justify-between w-full pt-2";
+  const inputClasses = `
+    w-full bg-transparent font-medium outline-none
+    ${handleDarkMode(colorMode)}
+    ${compactMode ? "text-xs" : "text-lg"}
+    ${pointer ? "cursor-pointer" : ""} 
+    ${cursorText ? "cursor-text" : ""}
+    ${!notMargin && !compactMode ? "my-1" : "m-0"}
+    placeholder-gray-300 placeholder-opacity-100
+  `;
   return (
     <Label.Root
       className={styles.labelRoot}
@@ -918,15 +958,17 @@ export function CurrencyInputText({
         width: width ? width : "100%",
       }}
     >
-      {title.includes(":") ? title : title + ":"}
+      {/* {title.includes(":") ? title : title + ":"} */}
 
-      <div className={styles.inputTextContainer}>
+      <div className="flex gap-1 items-center">{formattedTitle}</div>
+
+      <div className={`${inputContainerClasses}`}>
         <CurrencyInput
           {...rest}
           prefix={"R$ "}
           id={title.toLowerCase().replace(/ /g, "")}
           // className={`${styles.inputText} ${isDark ? "text-white" : "text-gray-700"}`}
-          className={`${styles.inputText} ${handleDarkMode(colorMode)}`}
+          className={`${inputClasses} ${handleDarkMode(colorMode)}`}
           autoComplete={"off"}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}

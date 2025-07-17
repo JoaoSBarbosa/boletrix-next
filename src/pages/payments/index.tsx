@@ -51,6 +51,7 @@ export default function Payments() {
   const [amount, setAmount] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
 
+  const [limitPerPage, setLimitPerPage] = useState<string>("100");
   const [hasFilter, setHasFilter] = useState(false);
   const [pageSize, setPageSize] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0); // total de páginas
@@ -220,6 +221,7 @@ export default function Payments() {
       }
     );
   }
+
   const paymentsExportColumns: ColumnTableProps[] = [
     {
       id: "installmentNumber",
@@ -328,7 +330,17 @@ export default function Payments() {
     }
     setShowDownland(false);
   }
+  const handleCleanValues = () => {
+    console.log("CHEGOU NO CLEAN PARAMETROS");
 
+    setAmount("");
+    setStatus("");
+    setInvoiceDate("");
+    setInstallmentNumber("");
+    setPaymentDate("");
+    setLimitPerPage("100");
+    fetchPayments(false, "100").then(setPayments);
+  };
   const displayDateTime = (date: string, time: string) => {
     const formattedDate = formatedDate(date);
 
@@ -341,11 +353,12 @@ export default function Payments() {
     }
   };
 
-  async function fetchPayments(withFilter: boolean) {
+  async function fetchPayments(withFilter: boolean, sizeOverride?: string) {
     let paymentsData = [] as InstallmentResponseType[];
 
+    let size = sizeOverride ? sizeOverride : limitPerPage;
     let paramsList = [] as string[];
-    paramsList.push("size=" + ITEMS_PER_PAGE);
+    paramsList.push("size=" + size);
     paramsList.push("page=" + (requestPage - 1));
 
     if (withFilter) {
@@ -363,6 +376,8 @@ export default function Payments() {
     for (const paramItem of paramsList) {
       paramsPayments += paramItem + "&";
     }
+
+    console.log("PARAMETROS: ", paramsPayments);
 
     setShowLoading(true);
     try {
@@ -444,15 +459,6 @@ export default function Payments() {
     }
   }
 
-  const handleCleanValues = () => {
-    setAmount("");
-    setStatus("");
-    setInvoiceDate("");
-    setInstallmentNumber("");
-    setPaymentDate("");
-    fetchPayments(false).then(setPayments);
-  };
-
   const reloadList = (updateInstallment: InstallmentResponseType) => {
     setPayments((prev) =>
       prev.map((row) =>
@@ -487,6 +493,8 @@ export default function Payments() {
               status={status}
               amount={amount}
               isMobile={isMobile}
+              limitPerPage={limitPerPage}
+              setLimitPerPage={setLimitPerPage}
               setStatus={setStatus}
               setAmount={setAmount}
               paymentDate={paymentDate}

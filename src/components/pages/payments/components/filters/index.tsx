@@ -16,6 +16,9 @@ interface FiltersDropdownProps {
   paymentDate: string;
   setPaymentDate: (value: string) => void;
 
+  limitPerPage: string;
+  setLimitPerPage: (value: string) => void;
+
   invoiceDate: string;
   setInvoiceDate: (value: string) => void;
 
@@ -47,6 +50,8 @@ export const FiltersDropdown = ({
   setAmount,
   apply,
   cleanFilter,
+  limitPerPage,
+  setLimitPerPage,
 }: FiltersDropdownProps) => {
   const handleCheckStatus = (value: status) => {
     if (status === value) {
@@ -74,8 +79,15 @@ export const FiltersDropdown = ({
       <Form.Form flexDirection={"column"}>
         <Form.FormRows justifyContent={"flex-start"}>
           <InputText
-            title={"Nº"}
-            width={"40%"}
+            title={"Limite página"}
+            width={"50%"}
+            placeholder={"Ex.: 100"}
+            value={limitPerPage}
+            onChange={(value) => setLimitPerPage(value.target.value)}
+          />
+          <InputText
+            title={"Nº parcela"}
+            width={"50%"}
             justNumber={true}
             value={installmentId}
             placeholder={"Ex.: 1"}
@@ -83,50 +95,54 @@ export const FiltersDropdown = ({
           >
             <FilesIcon />
           </InputText>
-          <CurrencyInputText
-            title={"Valor"}
-            width={"60%"}
-            placeholder={"Ex.: R$ 250,00"}
-            value={amount}
-            onValueChange={(value) => setAmount(value || "")}
-          >
-            <CurrencyCircleDollarIcon />
-          </CurrencyInputText>
         </Form.FormRows>
         <Form.FormRows justifyContent={"flex-start"}>
+          <CurrencyInputText
+            title={"Valor parcela"}
+            width={"40%"}
+            placeholder={"Ex.: 450,00"}
+            value={amount}
+            onValueChange={(value) => setAmount(value || "")}
+          />
           <InputText
-            title={"Data da Parcela"}
+            title={"Data parcela"}
             type={"date"}
-            width={"100%"}
+            width={"60%"}
             value={invoiceDate}
             onChange={(value) => setInvoiceDate(value.target.value)}
           />
         </Form.FormRows>
-        <Form.FormRows justifyContent={"flex-start"}>
-          <h2
-            className={
-              "text-sm border-b-2 border-secondary text-primaryColor font-bold"
-            }
-          >
-            Data e Hora de Pagamento
-          </h2>
-        </Form.FormRows>
-        <Form.FormRows justifyContent={"flex-start"}>
-          <InputText
-            title={"Data"}
-            type={"date"}
-            width={"60%"}
-            value={paymentDate}
-            onChange={(value) => setPaymentDate(value.target.value)}
-          />
-          <InputText
-            title={"Hora"}
-            type={"time"}
-            width={"40%"}
-            value={paymentDate}
-            onChange={(value) => setPaymentDate(value.target.value)}
-          />
-        </Form.FormRows>
+
+        {status === "PAID" && (
+          <>
+            <Form.FormRows justifyContent={"flex-start"}>
+              <h2
+                className={
+                  "text-sm border-b-2 border-secondary text-primaryColor font-bold"
+                }
+              >
+                Data e Hora de Pagamento
+              </h2>
+            </Form.FormRows>
+            <Form.FormRows justifyContent={"flex-start"}>
+              <InputText
+                title={"Data"}
+                type={"date"}
+                width={"60%"}
+                value={paymentDate}
+                onChange={(value) => setPaymentDate(value.target.value)}
+              />
+              <InputText
+                title={"Hora"}
+                type={"time"}
+                width={"40%"}
+                value={paymentDate}
+                onChange={(value) => setPaymentDate(value.target.value)}
+              />
+            </Form.FormRows>
+          </>
+        )}
+
         <Form.FormRows justifyContent={"flex-start"}>
           <CheckBox
             title="Apenas faturas pendentes"
