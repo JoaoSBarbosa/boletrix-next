@@ -139,7 +139,9 @@ export default function Payments() {
         user?.roles?.includes("ROLE_ADMIN") ? (
           <InstallmentStatus
             installment={row}
-            reloadData={reloadList}
+            reloadData={() => {
+              fetchPayments(false).then(setPayments);
+            }}
             isSmallScreen={isSmallScreen}
             isMobile={false}
           />
@@ -186,6 +188,7 @@ export default function Payments() {
         alignment: AlignmentColumnTableProps.CENTRALIZADO,
         width: 200,
         cell: (row: InstallmentResponseType) => (
+          // <EditInstallmentDialog installment={row} reload={reloadList} />
           <EditInstallmentDialog installment={row} reload={reloadList} />
         ),
       },
@@ -331,8 +334,6 @@ export default function Payments() {
     setShowDownland(false);
   }
   const handleCleanValues = () => {
-    console.log("CHEGOU NO CLEAN PARAMETROS");
-
     setAmount("");
     setStatus("");
     setInvoiceDate("");
@@ -376,9 +377,6 @@ export default function Payments() {
     for (const paramItem of paramsList) {
       paramsPayments += paramItem + "&";
     }
-
-    console.log("PARAMETROS: ", paramsPayments);
-
     setShowLoading(true);
     try {
       const { data }: AxiosResponse<PageableResponse<InstallmentResponseType>> =
@@ -484,6 +482,7 @@ export default function Payments() {
               <ActionsDropdown
                 length={payments?.length}
                 handleDeleteAll={handleDeleteAll}
+                debitId={payments?.[0]?.debtDTO?.id}
                 reload={() => {
                   fetchPayments(false).then(setPayments);
                 }}

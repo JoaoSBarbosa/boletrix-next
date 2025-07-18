@@ -208,7 +208,7 @@ export const EditInstallmentDialog = ({
               placeholder={"Ex.: 250,00"}
               width={"50%"}
               maxLength={50}
-              onChange={(event) => setAmount(event.target.value)}
+              onValueChange={(value) => setAmount(value ?? "")}
             >
               <MdPayments size={"16px"} />
             </CurrencyInputText>
